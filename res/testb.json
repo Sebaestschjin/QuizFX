@@ -1,0 +1,43 @@
+[
+  {
+    "name":"Religion und so",
+    "bild":null,
+    "farbe":"200/0/200",
+    "fragen":[
+      {
+        "fragetext":"Wie heißt das weibliche Gegenstück zum Phallus auf Sanskrit?",
+        "fragebild":"spargel.jpg",
+        "antworten" : [
+           "Yoni",
+           "Roff",
+           "Besa",
+           "Kiki"
+        ],
+        "antworttext":"<html><i>Yoni</i> (wörtlich: Ursprung) ist der tantrische Begriff für die weiblichen Genitalien",
+        "antwortbild":null,
+        "antwortquelle":"Wikipedia"
+      },
+      {
+        "fragetext":"Noch eine Frage",
+        "fragebild":null,
+        "antworten":[
+          "richtige Antwort",
+          "falsche Antwort",
+          "falsche Antwort",
+          "falsche Antwort"
+        ],
+        "antworttext":"Ich glaube, das wusstest du",
+        "antwortbild":null,
+        "antwortquelle":"Trivial",
+        "gewicht":2
+      }
+    ]
+  },
+  {
+    "name":"Kategorie 2",
+    "bild":null,
+    "farbe":"0000ff",
+    "fragen":[
+    ]
+  }
+]
