@@ -41,4 +41,13 @@ public class GameState {
 	public void removeCategory(int index){
 		remainingCategories.remove(index);
 	}
+	public Category getCategory(int index){
+		return remainingCategories.get(index);
+	}
+	public int getTeamPoints(boolean team1) {
+		int ret=0;
+		for(RoundState rs: rounds)
+			ret +=rs.getTeamPoints(team1);
+		return ret;
+	}
 }

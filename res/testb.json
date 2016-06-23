@@ -38,6 +38,39 @@
     "bild":null,
     "farbe":"0000ff",
     "fragen":[
-    ]
+    {
+        "fragetext":"?",
+        "fragebild":null,
+        "antworten":[
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "antworttext":"1 war richtig",
+        "antwortbild":null,
+        "antwortquelle":"",
+        "gewicht":2
+      }]
+  }
+    {
+    "name":"Kategorie 3",
+    "bild":null,
+    "farbe":"00aa00",
+    "fragen":[
+    {
+        "fragetext":"?",
+        "fragebild":null,
+        "antworten":[
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "antworttext":"1 war richtig",
+        "antwortbild":null,
+        "antwortquelle":"",
+        "gewicht":2
+      }]
   }
 ]

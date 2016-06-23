@@ -23,10 +23,20 @@ public class RoundState {
 		return category;
 	}
 	public Question selectAndRemoveQuestion(){
-		int i=Util.selectIndexWeighted(remainingQuestions);
-		Question ret = remainingQuestions.get(i);
-		remainingQuestions.remove(i);
+		int i = selectQuestionIndex();
+		Question ret = getQuestion(i);
+		removeQuestion(i);
 		return ret;
+	}
+	public int selectQuestionIndex() {
+		int i=Util.selectIndexWeighted(remainingQuestions);
+		return i;
+	}
+	public Question getQuestion(int index){
+		return remainingQuestions.get(index);
+	}
+	public void removeQuestion(int index){
+		remainingQuestions.remove(index);
 	}
 	
 	public Boolean getTeamResults(boolean team1, int index){
