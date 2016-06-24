@@ -16,10 +16,11 @@ import ui.QuizUI;
 import ui.mock.MockQuizUI;
 
 public class Main {
+	static boolean doImageFileCheck=true;
 	public static void run(File quizDataFile, QuizUI ui) throws IOException{
 		JSOWithPosition quizDataJSO=new JSONParser().parse(Paths.relative(Paths.resourcesDir, quizDataFile));
 		List<Category> quizData=JSOCodec.std.decodeList(quizDataJSO, Category.class);
-		checkImageFiles(quizData);
+		new Thread(()->checkImageFiles(quizData)).start();;
 		PersistentState.loadState(null);
 		QuizController qc=new QuizController(quizData, PersistentState.hallOfFame, ui);
 		Runtime.getRuntime().addShutdownHook(new Thread(()  -> {try{
@@ -38,6 +39,7 @@ public class Main {
 		ui.start();
 	}
 	public static void checkImageFiles(List<Category> data){
+		System.err.println("Überprüfe Bilddateien...");
 		for(Category cat: data){
 			checkImageFile(cat.getImageFile());
 			for(Question q: cat.getQuestions()){
@@ -45,6 +47,7 @@ public class Main {
 				checkImageFile(q.getAnswerImageFile());
 			}
 		}
+		System.err.println("Fertig mit Überprüfen der Bilddateien.");
 	}
 	private static void checkImageFile(File imageFile) {
 		if(imageFile==null)
