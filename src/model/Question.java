@@ -38,6 +38,7 @@ public class Question implements Weighted, JSOEncodable{
 		questionImageFile=qFile;
 		answerText=aText;
 		answerImageFile=aFile;
+		answerSource=aSource;
 		this.weight=weight;
 		this.answers.addAll(answers);
 	}
@@ -89,7 +90,7 @@ public class Question implements Weighted, JSOEncodable{
 		ret.put("fragebild", c.encode(questionImageFile==null?null:questionImageFile.getPath()));
 		ret.put("antworttext", c.encode(answerText));
 		ret.put("antwortbild", c.encode(answerImageFile==null?null:answerImageFile.getPath()));
-		ret.put("antwortqeulle", c.encode(answerSource));
+		ret.put("antwortquulle", c.encode(answerSource));
 		ret.put("gewicht", c.encode(weight));
 		ret.put("antworten", c.encode(answers));
 		return new JSOWithPosition(ret);
@@ -117,5 +118,8 @@ public class Question implements Weighted, JSOEncodable{
 			answers.add(new Answer(pa, i++));
 		}
 		return new Question(qText, qFile==null?null:new File(qFile), aText, aFile==null?null:new File(aFile), aSource, weight, answers);
+	}
+	public String getAnswerSource() {
+		return answerSource;
 	}
 }

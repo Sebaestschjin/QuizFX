@@ -1,0 +1,2 @@
+Runterladen und "src/util/SpringUtilities.java" zu ".git/info/exclude" hinzufügen:
+https://docs.oracle.com/javase/tutorial/uiswing/examples/layout/SpringGridProject/src/layout/SpringUtilities.java

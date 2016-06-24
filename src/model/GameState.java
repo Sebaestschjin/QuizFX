@@ -37,6 +37,14 @@ public class GameState {
 			outIndices[i]=index;
 			cats.remove(index);
 		}
+		for(int i=outIndices.length-1; i>0; --i){
+			int h=outIndices[i];
+			for(int j=i-1; j>=0; --j){
+				if(outIndices[j]<=h)
+					h++;
+			}
+			outIndices[i]=h;
+		}
 	}
 	public void removeCategory(int index){
 		remainingCategories.remove(index);

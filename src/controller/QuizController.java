@@ -26,9 +26,9 @@ public class QuizController implements ControllerCallback{
 		SHOWING_HALL_OF_FAME
 	}
 
-	private static final int TOTAL_ROUNDS = 6;
+	private static final int TOTAL_ROUNDS = 1;
 	private static final int SIMULTANEOUS_CATEGORIES = 3;
-	private static final int QPRPT = 3;
+	private static final int QPRPT = 1;
 	private static final boolean REUSE_QUESTIONS = true;
 	private static final long QUESTION_DURATION = 20*1000;
 
@@ -91,6 +91,7 @@ public class QuizController implements ControllerCallback{
 
 	private void showQuestion() {
 		expectState(State.SELECTING_CATEGORY, State.SHOWING_SOLUTION);
+		controllerState=State.SHOWING_QUESTION;
 		RoundState rs=gameState.getCurrentRound();
 		int qi = rs.selectQuestionIndex();
 		final Question q=rs.getQuestion(qi);
@@ -138,7 +139,8 @@ public class QuizController implements ControllerCallback{
 			if(timer!=null){
 				Thread t = timer;
 				timer=null;
-				t.interrupt();
+				if(t!=null)
+					t.interrupt();
 			}
 		}
 
@@ -156,12 +158,13 @@ public class QuizController implements ControllerCallback{
 				selectedCategories[i]=gameState.getCategory(selectedCategoriesIndices[i]);
 			ui.showCategorySelector(selectedCategories);
 		}else{
+			assert(false);
 			controllerState=State.SHOWING_WINNER;
 			int team1Points=gameState.getTeamPoints(true);
 			int team2Points=gameState.getTeamPoints(false);
 			hof.addEntry(gameState.getTeam(true), team1Points);
 			hof.addEntry(gameState.getTeam(false), team2Points);
-			ui.showWinner(gameState, team1Points, team2Points, TOTAL_ROUNDS, QPRPT);
+			ui.showWinner(gameState, TOTAL_ROUNDS, QPRPT);
 		}
 
 
@@ -196,7 +199,8 @@ public class QuizController implements ControllerCallback{
 		synchronized (this) {
 			Thread t = timer;
 			timer=null;
-			t.interrupt();
+			if(t!=null)
+				t.interrupt();
 		}
 		endQuestion();
 	}
@@ -229,10 +233,13 @@ public class QuizController implements ControllerCallback{
 		expectState(State.SHOWING_SOLUTION);
 		if(gameState.getRounds().size()>=TOTAL_ROUNDS){
 			controllerState=State.SHOWING_WINNER;
+			int team1Points=gameState.getTeamPoints(true);
+			int team2Points=gameState.getTeamPoints(false);
+			hof.addEntry(gameState.getTeam(true), team1Points);
+			hof.addEntry(gameState.getTeam(false), team2Points);
+
 			ui.showWinner(
 					gameState, 
-					gameState.getTeamPoints(true), 
-					gameState.getTeamPoints(false), 
 					TOTAL_ROUNDS, 
 					QPRPT
 					);
@@ -258,7 +265,8 @@ public class QuizController implements ControllerCallback{
 		synchronized (this) {
 			Thread t=timer;
 			timer=null;
-			t.interrupt();
+			if(t!=null)
+				t.interrupt();
 		}
 		controllerState = State.SHOWING_TITLE_SCREEN;
 		ui.showTitleScreen();
