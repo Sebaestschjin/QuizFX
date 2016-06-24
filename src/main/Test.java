@@ -15,7 +15,6 @@ import util.PrintWriterCharSink;
 public class Test {
 	public static void main(String[] args) throws IOException {
 		PersistentState.loadState(null);
-		changeHallOfFame2(null);
 		testJSON();
 		PersistentState.saveState(null);
 	}

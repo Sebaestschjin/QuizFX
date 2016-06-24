@@ -136,6 +136,8 @@ public class MockQuizUI implements QuizUI {
 		team2Name.addActionListener(al);
 		startScreen.add(team1Name);
 		startScreen.add(team2Name);
+		team1Name.setMaximumSize(new Dimension(400, 30));
+		team2Name.setMaximumSize(new Dimension(400, 30));
 		startScreen.add(Box.createGlue());
 
 
