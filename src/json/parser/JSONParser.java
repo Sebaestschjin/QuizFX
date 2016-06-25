@@ -2,8 +2,9 @@ package json.parser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import json.JSOWithPosition;
 
@@ -46,7 +46,7 @@ public class JSONParser {
 	}
 	public JSOWithPosition parse(File s, String srcName) throws IOException{
 		try(BufferedReader br=new BufferedReader(
-				new FileReader(s));
+				new InputStreamReader(new FileInputStream(s), "UTF-8"));
 				)
 		{
 			return parse(br, srcName==null?s.getName():srcName);

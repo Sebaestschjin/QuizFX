@@ -1,9 +1,7 @@
 package main;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +11,6 @@ import json.JSOWithPosition;
 import json.parser.JSONParser;
 import model.HallOfFame;
 import model.Team;
-import util.PrintWriterCharSink;
 
 public class PersistentState {
 	public static HallOfFame hallOfFame;
@@ -41,9 +38,7 @@ public class PersistentState {
 		Map<String, Object> m=new HashMap<>();
 		m.put("teamIdCounter", Team.getIdCounter());
 		m.put("hallOfFame", JSOCodec.std.encode(hallOfFame));
-		try(PrintWriter pw=new PrintWriter(new FileWriter(to))){
-			JSONRenderer.render(m, new PrintWriterCharSink(pw), "\t");
-		}
+		JSONRenderer.render(m, to, "\t");
 	}
 	public static void resetState() {
 		hallOfFame=new HallOfFame();
