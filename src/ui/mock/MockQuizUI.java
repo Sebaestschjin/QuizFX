@@ -43,13 +43,16 @@ public class MockQuizUI implements QuizUI {
 	JFrame window;
 
 	private JSlider timeDisplay;
-
+	private JComponent view;
 
 	{
 		window=new JFrame("Sexduell");
 		window.setLayout(new BorderLayout());
 
 
+		JButton cancelGame=new JButton("Spiel abbrechen");
+		window.add(cancelGame, BorderLayout.SOUTH);
+		cancelGame.addActionListener(ae->ccb.cancelGame());
 	}
 
 
@@ -88,17 +91,14 @@ public class MockQuizUI implements QuizUI {
 		clear();
 		window.add(jc, BorderLayout.CENTER);
 		window.validate();
+		view=jc;
 	}
 	private void later(Runnable r){
 		SwingUtilities.invokeLater(r);
 	}
 	private void clear() {
-		try{
-			window.getContentPane().remove(0);
-		}catch(ArrayIndexOutOfBoundsException x){
-			//NOP
-		}
-
+		if(view!=null)
+			window.getContentPane().remove(view);
 	}
 
 	@Override
@@ -294,7 +294,7 @@ public class MockQuizUI implements QuizUI {
 
 		JButton button=new JButton("OK");
 		b.add(button);
-		
+
 		button.addActionListener(ae->ccb.solutionScreenDismissed());
 		b.add(Box.createGlue());
 		setViewLater(b, button);
