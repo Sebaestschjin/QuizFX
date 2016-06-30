@@ -91,6 +91,7 @@ public class QuizController implements ControllerCallback{
 
 	private void showQuestion() {
 		expectState(State.SELECTING_CATEGORY, State.SHOWING_SOLUTION);
+		controllerState=State.SHOWING_QUESTION;
 		RoundState rs=gameState.getCurrentRound();
 		int qi = rs.selectQuestionIndex();
 		final Question q=rs.getQuestion(qi);
@@ -249,16 +250,19 @@ public class QuizController implements ControllerCallback{
 		ui.showHallOfFame(hof, gameState.getTeam(true), gameState.getTeam(false));
 	}
 
+
+
 	@Override
 	public void hallOfFameDismissed() {
 		expectState(State.SHOWING_HALL_OF_FAME);
 		start();
 	}
+
 	public void start() {
 		synchronized (this) {
-			Thread t=timer;
-			timer=null;
-			t.interrupt();
+			//Thread t=timer;
+			//t.interrupt();
+			//timer=null;
 		}
 		controllerState = State.SHOWING_TITLE_SCREEN;
 		ui.showTitleScreen();

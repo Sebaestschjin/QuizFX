@@ -25,13 +25,13 @@ public class Main {
 		}}));
 		qc.start();
 	}
+
 	public static void main(String[] args) throws IOException {
 		runMock();
 	}
+
 	private static void runMock() throws IOException {
-		MockQuizUI ui = new MockQuizUI();
+		QuizUI ui = new MockQuizUI();
 		run(new File("testb.json"), ui);
-		ui.start();
-		
 	}
 }
