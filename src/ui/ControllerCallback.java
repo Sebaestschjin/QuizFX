@@ -1,8 +1,15 @@
 package ui;
 
+import model.Settings;
+
 public interface ControllerCallback {
+	enum TitleScreenOption{
+		START_GAME,
+		SHOW_HALL_OF_FAME,
+		EDIT_SETTINGS
+	}
 	void teamNamesEntered(String team1, String team2);
-	void titleScreenDismissed();
+	void titleScreenDismissed(TitleScreenOption action);
 	void categorySelected(int index);
 	void cancelGame();
 	void roundOverwiewDismissed();
@@ -11,4 +18,5 @@ public interface ControllerCallback {
 	void solutionScreenDismissed();
 	void winnerScreenDismissed();
 	void hallOfFameDismissed();
+	void settingsScreenDismissed(Settings newSettings);
 }

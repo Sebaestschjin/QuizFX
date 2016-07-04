@@ -1,14 +1,17 @@
 package controller;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import main.PersistentState;
 import model.Answer;
 import model.Category;
 import model.GameState;
 import model.HallOfFame;
 import model.Question;
 import model.RoundState;
+import model.Settings;
 import model.Team;
 import ui.ControllerCallback;
 import ui.QuizUI;
@@ -23,14 +26,14 @@ public class QuizController implements ControllerCallback{
 		SHOWING_QUESTION,
 		SHOWING_SOLUTION,
 		SHOWING_WINNER,
-		SHOWING_HALL_OF_FAME
+		SHOWING_HALL_OF_FAME,
+		SHOWING_SETTINGS,
 	}
 
 	private static final int TOTAL_ROUNDS = 2;
 	private static final int QESTIONS_PER_ROUND_PER_TEAM = 3;
 	private static final int SIMULTANEOUS_CATEGORIES = 3;
 	private static final boolean REUSE_QUESTIONS = true;
-	private static final long QUESTION_DURATION = 20*1000;
 
 	State controllerState;
 	GameState gameState;
@@ -72,10 +75,22 @@ public class QuizController implements ControllerCallback{
 	}
 
 	@Override
-	public void titleScreenDismissed() {
+	public void titleScreenDismissed(TitleScreenOption what) {
 		expectState(State.SHOWING_TITLE_SCREEN);
-		controllerState=State.EXPECTING_TEAM_NAMES;
-		ui.promptForTeamNames();
+		switch(what){
+		case SHOW_HALL_OF_FAME:
+			controllerState=State.SHOWING_HALL_OF_FAME;
+			ui.showHallOfFame(hof, null, null);
+			break;
+		case START_GAME:
+			controllerState=State.EXPECTING_TEAM_NAMES;
+			ui.promptForTeamNames();
+			break;
+		case EDIT_SETTINGS:
+			controllerState=State.SHOWING_SETTINGS;
+			ui.showSettingsScreen(PersistentState.settings);
+			break;	
+		}
 	}
 
 	@Override
@@ -98,12 +113,13 @@ public class QuizController implements ControllerCallback{
 		currentQuestion=q;
 		if(!REUSE_QUESTIONS)
 			rs.removeQuestion(qi);
-		ui.setTimerDisplay(QUESTION_DURATION, QUESTION_DURATION);
+		long questionDuration=PersistentState.settings.getTimeoutMs();
+		ui.setTimerDisplay(questionDuration, questionDuration);
 		List<Answer> ppa=q.getShuffledAnswers();
 		permutedAnswers=(Answer[]) ppa.toArray(new Answer[ppa.size()]);
-		ui.showQuestion(q, permutedAnswers);
+		ui.showQuestion(gameState, q, permutedAnswers);
 		final long startTime=System.currentTimeMillis();
-		final long endTime=startTime+QUESTION_DURATION;
+		final long endTime=startTime+questionDuration;
 		team1AnswerIndex=-1;
 		team2AnswerIndex=-1;
 		synchronized (this) {
@@ -120,10 +136,14 @@ public class QuizController implements ControllerCallback{
 						timeRemaining = endTime - System.currentTimeMillis();
 						if(timeRemaining<=0){
 							timer=null;
-							endQuestion();
+							if(PersistentState.settings.isStrictTimeout())
+								endQuestion();
+							else{
+								ui.setTimerDisplay(0, questionDuration);
+							}
 							return;
 						}
-						ui.setTimerDisplay(timeRemaining, QUESTION_DURATION);
+						ui.setTimerDisplay(timeRemaining, questionDuration);
 					}
 
 				}
@@ -159,15 +179,7 @@ public class QuizController implements ControllerCallback{
 			ui.showCategorySelector(selectedCategories);
 		}else{
 			assert(false);
-			controllerState=State.SHOWING_WINNER;
-			int team1Points=gameState.getTeamPoints(true);
-			int team2Points=gameState.getTeamPoints(false);
-			hof.addEntry(gameState.getTeam(true), team1Points);
-			hof.addEntry(gameState.getTeam(false), team2Points);
-			ui.showWinner(gameState, TOTAL_ROUNDS, QESTIONS_PER_ROUND_PER_TEAM);
 		}
-
-
 	}
 
 	@Override
@@ -211,7 +223,7 @@ public class QuizController implements ControllerCallback{
 		currentRound.enterTeamAnswer(true,  team1AnswerIndex>=0 && permutedAnswers[team1AnswerIndex].isCorrect());
 		currentRound.enterTeamAnswer(false, team2AnswerIndex>=0 && permutedAnswers[team2AnswerIndex].isCorrect());
 		controllerState=State.SHOWING_SOLUTION;
-		ui.showSolution(currentQuestion, permutedAnswers, team1AnswerIndex, team2AnswerIndex);
+		ui.showSolution(gameState, currentQuestion, permutedAnswers, team1AnswerIndex, team2AnswerIndex);
 	}
 
 	@Override
@@ -232,11 +244,12 @@ public class QuizController implements ControllerCallback{
 	private void endRound() {
 		expectState(State.SHOWING_SOLUTION);
 		if(gameState.getRounds().size()>=TOTAL_ROUNDS){
+			String location=PersistentState.settings.getLocation();
 			controllerState=State.SHOWING_WINNER;
 			int team1Points=gameState.getTeamPoints(true);
 			int team2Points=gameState.getTeamPoints(false);
-			hof.addEntry(gameState.getTeam(true), team1Points);
-			hof.addEntry(gameState.getTeam(false), team2Points);
+			hof.addEntry(gameState.getTeam(true), team1Points, location);
+			hof.addEntry(gameState.getTeam(false), team2Points, location);
 
 			ui.showWinner(
 					gameState, 
@@ -267,6 +280,20 @@ public class QuizController implements ControllerCallback{
 			timer=null;
 			if(t!=null)
 				t.interrupt();
+		}
+		controllerState = State.SHOWING_TITLE_SCREEN;
+		ui.showTitleScreen();
+	}
+	@Override
+	public void settingsScreenDismissed(Settings newSettings) {
+		expectState(State.SHOWING_SETTINGS);
+		if(newSettings!=null){
+			PersistentState.settings=newSettings;
+			try {
+				PersistentState.saveState(null);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		controllerState = State.SHOWING_TITLE_SCREEN;
 		ui.showTitleScreen();
