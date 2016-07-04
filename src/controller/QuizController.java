@@ -176,7 +176,7 @@ public class QuizController implements ControllerCallback{
 			gameState.selectRandomCategories(selectedCategoriesIndices);
 			for(int i=0; i<SIMULTANEOUS_CATEGORIES; ++i)
 				selectedCategories[i]=gameState.getCategory(selectedCategoriesIndices[i]);
-			ui.showCategorySelector(selectedCategories);
+			ui.showCategorySelector(gameState.getRounds().size()%2==0, gameState, selectedCategories);
 		}else{
 			assert(false);
 		}

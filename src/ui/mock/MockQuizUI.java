@@ -112,7 +112,7 @@ public class MockQuizUI implements QuizUI {
 		titleScreen.add(new JLabel("<html><h1>Sexduell!</h1>"));
 		Box buttons=Box.createVerticalBox();
 		titleScreen.add(buttons, BorderLayout.SOUTH);
-		JButton start=new JButton("OK");
+		JButton start=new JButton("Start");
 		JButton shof=new JButton("Hall of Fame anzeigen");
 		JButton showSettings=new JButton("Einstellungen anzeigen");
 		buttons.add(start);
@@ -158,9 +158,9 @@ public class MockQuizUI implements QuizUI {
 	}
 
 	@Override
-	public void showCategorySelector(Category... categories) {
+	public void showCategorySelector(boolean team1, GameState gs, Category... categories) {
 		final Box b=Box.createVerticalBox();
-		b.add(new JLabel("Kategorie auswählen"));
+		b.add(new JLabel("Kategorie auswählen (Team "+gs.getTeam(team1).getName()+" ist dran)"));
 		for(int i=0; i<categories.length; ++i){
 			final int fi=i;
 			Category cat = categories[i];

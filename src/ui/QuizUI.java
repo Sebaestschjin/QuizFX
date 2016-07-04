@@ -12,7 +12,7 @@ public interface QuizUI {
 	void setControllerCallback(ControllerCallback ccb);
 	void showTitleScreen();
 	void promptForTeamNames();
-	void showCategorySelector(Category... categories);
+	void showCategorySelector(boolean team1Selects, GameState gs, Category... categories);
 	void showRoundOverview(GameState gs, int totalRounds, int questionsPerRoundPerTeam);
 	void showQuestion(GameState gs, Question q, Answer[] permutedAnswers);
 	void showSolution(GameState gs, Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex);
