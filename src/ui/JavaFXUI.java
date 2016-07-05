@@ -27,8 +27,11 @@ public class JavaFXUI extends StackPane implements QuizUI {
 	private QuestionScreen currentQuestion;
 
     public JavaFXUI() {
-        addScreen(new BackgroundScreen());
     }
+
+	public void initialize() {
+		loadScreen(new BackgroundScreen());
+	}
 
     private void loadScreen(UIScreen screen) {
 		// set the correct callbacks

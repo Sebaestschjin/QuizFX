@@ -43,6 +43,7 @@ public class MainFX extends Application {
 		final Scene scene = new Scene(screenLoader, 600, 500);
 		scene.getStylesheets().add(getClass().getResource(Resource.STYLE).toExternalForm());
 		stage.setScene(scene);
+		screenLoader.initialize();
 
 		// enable full screen without exit possibility
 		stage.setFullScreen(true);

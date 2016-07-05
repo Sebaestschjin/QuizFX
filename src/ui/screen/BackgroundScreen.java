@@ -29,31 +29,32 @@ public class BackgroundScreen extends UIScreen {
         pane.setBackground(new javafx.scene.layout.Background(new BackgroundFill(Colors.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         // logo in top right corner
-        ImageView logo = new ImageView(new Image(getClass().getResourceAsStream(Resource.LOGO)));
-        logo.setPreserveRatio(true);
+        addImage(pane, Pos.TOP_RIGHT, Resource.LOGO);
+        addImage(pane, Pos.BOTTOM_RIGHT, Resource.CLAIM);
 
-        // claim in bottom right corner
-        ImageView claim = new ImageView(new Image(getClass().getResourceAsStream(Resource.CLAIM)));
-        claim.setPreserveRatio(true);
-
-        BorderPane.setAlignment(logo, Pos.TOP_RIGHT);
-        pane.setTop(logo);
-
-        BorderPane.setAlignment(claim, Pos.BOTTOM_RIGHT);
-        pane.setBottom(claim);
-
-        // layout listener to auto-resize logo
-        pane.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
-            // new size
-            double newWidth = newValue.getWidth() / sizeRatio;
-            logo.setFitWidth(newWidth);
-            claim.setFitWidth(newWidth);
-
-            // adjust parent padding according so safe zone requirements
-            double safeZone = logo.getFitWidth() / 10;
-            pane.setPadding(new Insets(0, safeZone, 0, 0));
-        });
+		pane.setPadding(new Insets(0, 20, 0, 0));
 
         return pane;
+    }
+
+    private void addImage(BorderPane parent, Pos borderPosition, String resourceName) {
+        try {
+            ImageView image = new ImageView(new Image(getClass().getResourceAsStream(resourceName)));
+            image.setPreserveRatio(true);
+
+            image.fitWidthProperty().bind(scene.widthProperty().divide(sizeRatio));
+            BorderPane.setAlignment(image, borderPosition);
+
+            switch (borderPosition) {
+                case TOP_RIGHT:
+                    parent.setTop(image);
+                    break;
+                case BOTTOM_RIGHT:
+                    parent.setBottom(image);
+                    break;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 }
