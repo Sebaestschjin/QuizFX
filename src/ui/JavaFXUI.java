@@ -4,6 +4,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import model.*;
@@ -76,6 +78,12 @@ public class JavaFXUI extends StackPane implements QuizUI {
 	@Override
 	public void setControllerCallback(ControllerCallback ccb) {
 		controller = ccb;
+
+		// add general handler to cancel the game from anywhere
+		getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+			if (event.getCode() == KeyCode.F4)
+				controller.cancelGame();
+		});
 	}
 
 	@Override
@@ -89,8 +97,8 @@ public class JavaFXUI extends StackPane implements QuizUI {
 	}
 
 	@Override
-	public void showCategorySelector(Category... categories) {
-		loadScreen(new CategoryChooserScreen(categories));
+	public void showCategorySelector(boolean team1Selects, GameState gs, Category... categories) {
+		loadScreen(new CategoryChooserScreen(team1Selects, gs, categories));
 	}
 
 	@Override
@@ -99,14 +107,14 @@ public class JavaFXUI extends StackPane implements QuizUI {
 	}
 
 	@Override
-	public void showQuestion(Question q, Answer[] permutedAnswers) {
+	public void showQuestion(GameState gs, Question q, Answer[] permutedAnswers) {
 		currentQuestion = new QuestionScreen(q, permutedAnswers);
 		loadScreen(currentQuestion);
 	}
 
 	@Override
-	public void showSolution(Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex) {
-		loadScreen(new AnswerScreen(q, permutedAnswers, team1AnswerIndex, team2AnswerIndex));
+	public void showSolution(GameState gs, Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex) {
+		loadScreen(new AnswerScreen(gs, q, permutedAnswers, team1AnswerIndex, team2AnswerIndex));
 	}
 
 	@Override
@@ -128,5 +136,11 @@ public class JavaFXUI extends StackPane implements QuizUI {
 	@Override
 	public void giveDoubleAnswerMessage(boolean team1) {
 		// TODO implement
+		System.out.println("Method \"" + new Object(){}.getClass().getEnclosingMethod().getName() + "\" not yet implemented");
+	}
+
+	@Override
+	public void showSettingsScreen(Settings s) {
+		loadScreen(new SettingsScreen(s));
 	}
 }

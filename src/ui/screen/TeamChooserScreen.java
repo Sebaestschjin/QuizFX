@@ -9,6 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import ui.ID;
 import util.Text;
 
 /**
@@ -75,6 +76,8 @@ public class TeamChooserScreen extends UIScreen {
 						verifyInput();
 				}
 		);
+		teamEdit.setId(ID.TEAM_INPUT(teamIndex));
+
 
 		// finish
 		teamBox.getChildren().addAll(teamLabel, teamEdit);
@@ -83,6 +86,13 @@ public class TeamChooserScreen extends UIScreen {
 
 
 	private void verifyInput() {
+		for (int i = 0; i < teams; ++i) {
+			if (teamNames[i] == null || teamNames[i].length() < 5) {
+				ui.lookup("#" + ID.TEAM_INPUT(i)).requestFocus();
+				return;
+			}
+		}
+
 		controller.teamNamesEntered(teamNames[0], teamNames[1]);
 	}
 }

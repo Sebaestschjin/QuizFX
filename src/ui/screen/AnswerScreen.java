@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import model.Answer;
+import model.GameState;
 import model.Question;
 import ui.control.HTMLLabel;
 import util.Text;
@@ -19,13 +20,16 @@ import util.Text;
  */
 public class AnswerScreen extends UIScreen {
 
+	private GameState gs;
+
 	private Question question;
 
 	private Answer[] answers;
 
 	private int[] teamAnswers = new int[teams];
 
-	public AnswerScreen(Question question, Answer[] answers, int team1Entered, int team2Entered) {
+	public AnswerScreen(GameState gs, Question question, Answer[] answers, int team1Entered, int team2Entered) {
+		this.gs = gs;
 		this.question = question;
 		this.answers = answers;
 		this.teamAnswers[0] = team1Entered;
@@ -83,8 +87,7 @@ public class AnswerScreen extends UIScreen {
 	}
 
 	private Node getTeamLabel(int team) {
-		// TODO request game state to get correct team names
-		Label teamLabel = new Label("Team " + (team + 1));
+		Label teamLabel = new Label(gs.getTeam(team == 0).getName());
 
 		Color color;
 		int teamAnswer = teamAnswers[team];
