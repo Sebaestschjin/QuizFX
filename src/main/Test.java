@@ -22,14 +22,14 @@ public class Test {
 		
 		Team t1=new Team("Dicke Dödel");
 		Team t2=new Team("Kleine Klöten");
-		PersistentState.hallOfFame.addEntry(t1, 1000);
-		PersistentState.hallOfFame.addEntry(t2, 1);
+		PersistentState.hallOfFame.addEntry(t1, 1000, "");
+		PersistentState.hallOfFame.addEntry(t2, 1, "");
 	}
 	public static void changeHallOfFame2(String file){
 		Team t1=new Team("Flinke Fotzen");
 		Team t2=new Team("Lahme Labia");
-		PersistentState.hallOfFame.addEntry(t1, 1000);
-		PersistentState.hallOfFame.addEntry(t2, 1);
+		PersistentState.hallOfFame.addEntry(t1, 1000, "");
+		PersistentState.hallOfFame.addEntry(t2, 1, "");
 	}
 
 	private static void testJSON() throws IOException {

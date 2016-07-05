@@ -16,9 +16,6 @@ public class Answer implements JSOEncodable{
 	public String getText(){
 		return text;
 	}
-	public int getId(){
-		return id;
-	}
 	public boolean isCorrect(){
 		return correct;
 	}

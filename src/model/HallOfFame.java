@@ -18,10 +18,12 @@ public class HallOfFame implements JSOEncodable{
 	public static class Entry implements Comparable<Entry>,JSOEncodable{
 		Team team;
 		int points;
+		String location;
 		
-		public Entry(Team t, int points){
+		public Entry(Team t, int points, String location){
 			team=t;
 			this.points=points;
+			this.location=location;
 		}
 		/**
 		 * Better Teams are less in this ordering, so they come first in the sorted list.
@@ -40,6 +42,9 @@ public class HallOfFame implements JSOEncodable{
 			
 			return 0;
 		}
+		public String getLocation(){
+			return location;
+		}
 		public Team getTeam(){
 			return team;
 		}
@@ -51,6 +56,7 @@ public class HallOfFame implements JSOEncodable{
 			Map<String, JSOWithPosition> ret=new HashMap<>();
 			ret.put("team", c.encode(team));
 			ret.put("score", c.encode(points));
+			ret.put("location", c.encode(location));
 			return new JSOWithPosition(ret);
 		}
 		public static Entry decodeJSO(JSOWithPosition jso, JSOCodec codec){
@@ -61,13 +67,16 @@ public class HallOfFame implements JSOEncodable{
 			Integer points=codec.decode(m.get("score"), Integer.class);
 			if(points==null)
 				throw new DataFormatException("\"score\" is required", jso.getPosition());
-			return new Entry(team, points);
+			String location=codec.decode(m.get("location"), String.class);
+			if(location==null)
+				location="";
+			return new Entry(team, points, location);
 		}
 	}
 	
 	SortedSet<Entry> entries=new TreeSet<>();
-	public void addEntry(Team team, int points){
-		entries.add(new Entry(team, points));
+	public void addEntry(Team team, int points, String location){
+		entries.add(new Entry(team, points, location));
 	}
 	public SortedSet<Entry> getEntries(){
 		return Collections.unmodifiableSortedSet(entries);

@@ -17,12 +17,15 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 
@@ -32,8 +35,10 @@ import model.GameState;
 import model.HallOfFame;
 import model.Question;
 import model.RoundState;
+import model.Settings;
 import model.Team;
 import ui.ControllerCallback;
+import ui.ControllerCallback.TitleScreenOption;
 import ui.QuizUI;
 import util.SpringUtilities;
 
@@ -105,10 +110,18 @@ public class MockQuizUI implements QuizUI {
 	public void showTitleScreen() {
 		JPanel titleScreen = new JPanel(new BorderLayout());
 		titleScreen.add(new JLabel("<html><h1>Sexduell!</h1>"));
-		JButton button=new JButton("OK");
-		titleScreen.add(button, BorderLayout.SOUTH);
-		button.addActionListener(ae -> ccb.titleScreenDismissed());
-		setViewLater(titleScreen, button);
+		Box buttons=Box.createVerticalBox();
+		titleScreen.add(buttons, BorderLayout.SOUTH);
+		JButton start=new JButton("Start");
+		JButton shof=new JButton("Hall of Fame anzeigen");
+		JButton showSettings=new JButton("Einstellungen anzeigen");
+		buttons.add(start);
+		buttons.add(shof);
+		buttons.add(showSettings);
+		start.addActionListener(ae -> ccb.titleScreenDismissed(TitleScreenOption.START_GAME));
+		shof.addActionListener(ae -> ccb.titleScreenDismissed(TitleScreenOption.SHOW_HALL_OF_FAME));
+		showSettings.addActionListener(ae -> ccb.titleScreenDismissed(TitleScreenOption.EDIT_SETTINGS));
+		setViewLater(titleScreen, start);
 	}
 
 	@Override
@@ -145,9 +158,9 @@ public class MockQuizUI implements QuizUI {
 	}
 
 	@Override
-	public void showCategorySelector(Category... categories) {
+	public void showCategorySelector(boolean team1, GameState gs, Category... categories) {
 		final Box b=Box.createVerticalBox();
-		b.add(new JLabel("Kategorie auswählen"));
+		b.add(new JLabel("Kategorie auswählen (Team "+gs.getTeam(team1).getName()+" ist dran)"));
 		for(int i=0; i<categories.length; ++i){
 			final int fi=i;
 			Category cat = categories[i];
@@ -220,7 +233,7 @@ public class MockQuizUI implements QuizUI {
 	}
 
 	@Override
-	public void showQuestion(Question q, Answer[] permutedAnswers) {
+	public void showQuestion(GameState g, Question q, Answer[] permutedAnswers) {
 		Box b=Box.createVerticalBox();
 		BufferedImage bim=null;
 		try {
@@ -259,7 +272,7 @@ public class MockQuizUI implements QuizUI {
 	}
 
 	@Override
-	public void showSolution(Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex) {
+	public void showSolution(GameState g, Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex) {
 		Box b=Box.createVerticalBox();
 		BufferedImage bim=null;
 		try {
@@ -359,28 +372,34 @@ public class MockQuizUI implements QuizUI {
 		for(int i=0; i<hofRows; ++i){
 			if(it.hasNext()){
 				HallOfFame.Entry e=it.next();
-				JLabel tl = new JLabel("Team "+e.getTeam().getName()+"      ");
-				Color bg;
 
-				if(e.getTeam().getId()==team1.getId())
+				Color bg;
+				if(team1!=null && e.getTeam().getId()==team1.getId())
 					bg=new Color(0xDDDDFF);
-				if(e.getTeam().getId()==team2.getId())
+				if(team2!=null && e.getTeam().getId()==team2.getId())
 					bg=new Color(0xDDDDFF);
 				else if(i%2==0)
 					bg=new Color(0xFFFFFF);
 				else
 					bg=new Color(0xDDDDDD);
+				
+				JLabel tl = new JLabel("Team "+e.getTeam().getName()+"");
 				tl.setBackground(bg);
 				p.add(tl);
+				
 				JLabel pl=new JLabel(e.getPoints()+" Punkte");
 				pl.setBackground(bg);
 				p.add(pl);
+
+				JLabel locl=new JLabel(" "+e.getLocation());
+				locl.setBackground(bg);
+				p.add(locl);
 			}else{
 				p.add(new JLabel("---"));
 				p.add(new JLabel("---"));
 			}
 		}
-		SpringUtilities.makeCompactGrid(p, hofRows, 2, 0, 0, 0, 3);
+		SpringUtilities.makeCompactGrid(p, hofRows, 3, 0, 0, 20, 3);
 		Box b=Box.createVerticalBox();
 		b.add(new JLabel("<html><h1>Hall of Fame</h1>"));
 		b.add(p);
@@ -398,5 +417,47 @@ public class MockQuizUI implements QuizUI {
 			System.out.println("Double answer by team "+(team1?1:2));
 			Toolkit.getDefaultToolkit().beep();
 		});
+	}
+
+	@Override
+	public void showSettingsScreen(Settings s) {
+		JPanel p=new JPanel(new SpringLayout());
+
+		p.add(new JLabel("Zeit pro Frage"));
+		SpinnerNumberModel timeout=new SpinnerNumberModel(s.getTimeoutMs()*0.001, 0, 1000000, 1000);
+		p.add(new JSpinner(timeout));
+		
+		p.add(new JLabel("Ort (für Hall of Fame)"));
+		JTextField location = new JTextField(s.getLocation());
+		p.add(location);
+		
+		p.add(new JLabel("Strenge Zeitgrenze"));
+		JCheckBox strictTimeout=new JCheckBox("                                   ");
+		strictTimeout.setSelected(s.isStrictTimeout());
+		p.add(strictTimeout);
+		
+		
+		SpringUtilities.makeCompactGrid(p, 3, 2, 0, 0, 3, 3);
+
+		
+		Box b=Box.createVerticalBox();
+		b.add(new JLabel("<html><h1>Einstellungen</h1>"));
+		b.add(p);
+		JButton ok=new JButton("OK");
+		JButton cancel=new JButton("Abbrechen");
+		b.add(Box.createGlue());
+		b.add(ok);
+		b.add(cancel);
+		b.add(Box.createGlue());
+		ok.addActionListener(ae->{
+			Settings newSettings=s.clone();
+			newSettings.setLocation(location.getText());
+			newSettings.setStrictTimeout(strictTimeout.isSelected());
+			newSettings.setTimeoutMs((int) (timeout.getNumber().doubleValue()*1000));
+			ccb.settingsScreenDismissed(newSettings);
+		});
+		cancel.addActionListener(ae-> ccb.settingsScreenDismissed(null));
+		setViewLater(b, ok);
+	
 	}
 }
