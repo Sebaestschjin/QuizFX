@@ -1,8 +1,8 @@
 package ui.screen;
 
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
@@ -10,23 +10,36 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.text.TextAlignment;
 import model.Answer;
 import model.Question;
-import util.Resource;
+import ui.Sizer;
+import util.Style;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Sebastian Stern
  */
 public class QuestionScreen extends UIScreen {
 
+	// TODO allow key-bindings to be set by user
+	private List<KeyCode> team1Keys = Arrays.asList(KeyCode.Q, KeyCode.W, KeyCode.E, KeyCode.R);
+	private List<KeyCode> team2Keys = Arrays.asList(KeyCode.H, KeyCode.J, KeyCode.K, KeyCode.L);
+
 	private Question question;
 
 	private Answer[] answers;
 
 	private ProgressBar progressBar;
+
+	private EventHandler<KeyEvent> inputHandler;
 
 	public QuestionScreen(Question question, Answer[] answers) {
 		this.question = question;
@@ -67,23 +80,43 @@ public class QuestionScreen extends UIScreen {
 		progressBar.prefWidthProperty().bind(pane.widthProperty().subtract(10));
 		pane.getChildren().add(progressBar);
 
+		// set event-handler for inputting the teams answers
+		inputHandler = event -> {
+				System.out.println(event.getCode());
+				int index = team1Keys.indexOf(event.getCode());
+				if (index != -1)
+					controller.team1AnswerEntered(index);
+				index = team2Keys.indexOf(event.getCode());
+				if (index != -1)
+					controller.team2AnswerEntered(index);
+		};
+		scene.addEventHandler(KeyEvent.KEY_PRESSED, inputHandler);
+
 		return pane;
+	}
+
+	@Override
+	public void unload() {
+		scene.removeEventHandler(KeyEvent.KEY_PRESSED, inputHandler);
 	}
 
 	private GridPane createGrid() {
 		GridPane pane = new GridPane();
+
+		// set the width of the columns relative to the main screen width
 		ColumnConstraints col1 = new ColumnConstraints();
-		col1.setPercentWidth(50);
+		col1.percentWidthProperty().bind(scene.widthProperty().multiply(0.3));
 		ColumnConstraints col2 = new ColumnConstraints();
-		col2.setPercentWidth(50);
+		col2.percentWidthProperty().bind(scene.widthProperty().multiply(0.3));
 		pane.getColumnConstraints().addAll(col1, col2);
 
+		// set the height of the rows relative to the main screen height
 		RowConstraints row1 = new RowConstraints();
-		row1.setPercentHeight(40);
+		row1.percentHeightProperty().bind(scene.heightProperty().multiply(0.5));
 		RowConstraints row2 = new RowConstraints();
-		row2.setPercentHeight(25);
+		row2.percentHeightProperty().bind(scene.heightProperty().multiply(0.4));
 		RowConstraints row3 = new RowConstraints();
-		row3.setPercentHeight(2);
+		row3.percentHeightProperty().bind(scene.heightProperty().multiply(0.1));
 		pane.getRowConstraints().addAll(row1, row2, row2, row3);
 
 		pane.setHgap(10);
@@ -97,13 +130,15 @@ public class QuestionScreen extends UIScreen {
 		Pane content = new StackPane();
 
 		Label questionLabel = new Label(question.getQuestionText());
+		questionLabel.setWrapText(true);
+		questionLabel.setTextAlignment(TextAlignment.CENTER);
+		sizer.font(questionLabel, Sizer.FONT_RATIO_GENERAL * 2);
 		File imageFile = question.getQuestionImageFile();
 		if (imageFile != null) {
 			String fName = "/" +imageFile.getName();
 			questionLabel.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(fName))));
 			questionLabel.setContentDisplay(ContentDisplay.TOP);
 		}
-		questionLabel.setAlignment(Pos.CENTER);
 
 		content.getChildren().add(questionLabel);
 		content.getStyleClass().add("question");
@@ -116,15 +151,12 @@ public class QuestionScreen extends UIScreen {
 		Pane content = new StackPane();
 
 		Label answerLabel = new Label(answer.getText());
-		answerLabel.setAlignment(Pos.CENTER);
+		answerLabel.setTextAlignment(TextAlignment.CENTER);
+		answerLabel.setWrapText(true);
+		sizer.font(answerLabel);
 
-		answerLabel.setOnMouseClicked(event -> {
-					controller.team1AnswerEntered(index);
-					controller.team2AnswerEntered(index);
-				}
-		);
-
-		content.getStyleClass().add("answer_" + index);
+		content.getStyleClass().add(Style.ANSWER);
+		content.getStyleClass().add(Style.ANSWER(index));
 		content.getChildren().add(answerLabel);
 		return content;
 	}

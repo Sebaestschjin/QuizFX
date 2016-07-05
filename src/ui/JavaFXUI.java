@@ -9,30 +9,37 @@ import javafx.util.Duration;
 import model.*;
 import ui.screen.*;
 
-import java.io.File;
-
 /**
  * @author Sebastian Stern
  */
-public class ScreenStack extends StackPane implements QuizUI {
+public class JavaFXUI extends StackPane implements QuizUI {
 
-	private final Duration FADE_OUT = new Duration(800);
+	private final Duration FADE_OUT = new Duration(500);
 
-	private final Duration FADE_IN = new Duration(800);
+	private final Duration FADE_IN = new Duration(500);
+
+	private UIScreen currentScreen;
 
     private ControllerCallback controller;
 
 	private QuestionScreen currentQuestion;
 
-    public ScreenStack() {
+    public JavaFXUI() {
         addScreen(new BackgroundScreen());
     }
 
-    public void loadScreen(UIScreen screen) {
+    private void loadScreen(UIScreen screen) {
+		// set the correct callbacks
+		screen.setController(controller);
+		screen.setScene(getScene());
+
+		// load screen or transition between screens
         if (!isLoaded())
             addScreen(screen);
         else
             transition(getLoadedScreen(), screen);
+
+		screen.getUI().requestFocus();
     }
 
     private boolean isLoaded() {
@@ -40,10 +47,11 @@ public class ScreenStack extends StackPane implements QuizUI {
     }
 
     private Node getLoadedScreen() {
-        return getChildren().get(1);
+        return currentScreen.getUI();
     }
 
     private void transition(Node from, UIScreen to) {
+		currentScreen.unload();
         to.getUI().setOpacity(0.0);
         Timeline fade = new Timeline(new KeyFrame(Duration.ZERO,
                 new KeyValue(from.opacityProperty(), 1.0)),
@@ -61,7 +69,7 @@ public class ScreenStack extends StackPane implements QuizUI {
     }
 
     private void addScreen(UIScreen ui) {
-        ui.setController(controller);
+		currentScreen = ui;
         getChildren().add(ui.getUI());
     }
 
@@ -72,14 +80,7 @@ public class ScreenStack extends StackPane implements QuizUI {
 
 	@Override
 	public void showTitleScreen() {
-		Answer a = new Answer("Antwort 1", 1);
-		Answer b = new Answer("Antwort 2", 1);
-		Answer c = new Answer("Antwort 3", 1);
-		Answer d = new Answer("Antwort 4", 1);
-		Question q = new Question("Wie lautet die Antwort?", null, "Das stimmt!", null, null, 1, a, b, c, d);
-		loadScreen(new QuestionScreen(q, new Answer[] {a, b, c, d}));
-
-		//loadScreen(new MainMenuScreen());
+		loadScreen(new MainMenuScreen());
 	}
 
 	@Override
@@ -105,7 +106,7 @@ public class ScreenStack extends StackPane implements QuizUI {
 
 	@Override
 	public void showSolution(Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex) {
-		loadScreen(new AnswerScreen(q));
+		loadScreen(new AnswerScreen(q, permutedAnswers, team1AnswerIndex, team2AnswerIndex));
 	}
 
 	@Override
@@ -115,8 +116,8 @@ public class ScreenStack extends StackPane implements QuizUI {
 	}
 
 	@Override
-	public void showWinner(GameState gs, int team1Points, int team2Points, int totalRounds, int questionsPerRoundPerTeam) {
-		loadScreen(new WinnerScreen(gs, team1Points, team2Points));
+	public void showWinner(GameState gs, int totalRounds, int questionsPerRoundPerTeam) {
+		loadScreen(new WinnerScreen(gs, gs.getTeamPoints(true), gs.getTeamPoints(false)));
 	}
 
 	@Override

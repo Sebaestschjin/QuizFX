@@ -80,7 +80,7 @@ public class JSOCodec {
 		try{
 			@SuppressWarnings("unchecked")
 			List<JSOWithPosition> c= (List<JSOWithPosition>)l.get();
-			List<E> ret = new ArrayList<>();
+			List<E> ret = new ArrayList<>(c.size());
 			for(JSOWithPosition e: c)
 				ret.add(decode(e, etype));
 			return ret;

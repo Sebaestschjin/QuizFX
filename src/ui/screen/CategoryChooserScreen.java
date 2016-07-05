@@ -1,6 +1,7 @@
 package ui.screen;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
@@ -11,7 +12,7 @@ import model.Category;
  */
 public class CategoryChooserScreen extends UIScreen {
 
-	Category[] categories;
+	private Category[] categories;
 
 	public CategoryChooserScreen(Category... categories) {
 		this.categories = categories;
@@ -19,7 +20,10 @@ public class CategoryChooserScreen extends UIScreen {
 
 	@Override
 	protected Node createUI() {
-		Pane pane = new VBox();
+		VBox pane = new VBox();
+
+		pane.setAlignment(Pos.CENTER);
+		pane.setSpacing(10);
 
 		for (int i = 0; i < categories.length; ++i) {
 			final int index = i;
@@ -29,6 +33,7 @@ public class CategoryChooserScreen extends UIScreen {
 			catButton.setOnMouseClicked(event ->
 				controller.categorySelected(index)
 			);
+			sizer.font(catButton);
 			pane.getChildren().add(catButton);
 		}
 

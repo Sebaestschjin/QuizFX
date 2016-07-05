@@ -5,7 +5,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import util.Colors;
 import util.Resource;
 
@@ -14,7 +16,7 @@ import util.Resource;
  */
 public class BackgroundScreen extends UIScreen {
 
-    final int sizeRatio = 7;
+    private final int sizeRatio = 7;
 
     public BackgroundScreen() {
     }
@@ -34,10 +36,10 @@ public class BackgroundScreen extends UIScreen {
         ImageView claim = new ImageView(new Image(getClass().getResourceAsStream(Resource.CLAIM)));
         claim.setPreserveRatio(true);
 
-        pane.setAlignment(logo, Pos.TOP_RIGHT);
+        BorderPane.setAlignment(logo, Pos.TOP_RIGHT);
         pane.setTop(logo);
 
-        pane.setAlignment(claim, Pos.BOTTOM_RIGHT);
+        BorderPane.setAlignment(claim, Pos.BOTTOM_RIGHT);
         pane.setBottom(claim);
 
         // layout listener to auto-resize logo

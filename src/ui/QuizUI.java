@@ -16,7 +16,7 @@ public interface QuizUI {
 	void showQuestion(Question q, Answer[] permutedAnswers);
 	void showSolution(Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex);
 	void setTimerDisplay(long millisRemaining, long millisTotal);
-	void showWinner(GameState gs, int team1Points, int team2Points, int totalRounds, int questionsPerRoundPerTeam);
+	void showWinner(GameState gs, int totalRounds, int questionsPerRoundPerTeam);
 	void showHallOfFame(HallOfFame hof, Team team1, Team team2);
 	void giveDoubleAnswerMessage(boolean team1);
 }

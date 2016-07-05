@@ -1,9 +1,15 @@
 package json;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
 import util.CharSink;
+import util.PrintWriterCharSink;
 
 public class JSONRenderer {
 	public static void renderLinebreak(CharSink cs, String indentationPrefix){
@@ -94,5 +100,12 @@ public class JSONRenderer {
 	}
 	public static void render(Object o, CharSink cs, String indentStr) {
 		render(o, cs, indentStr, "");
+	}
+	public static void render(Object o, File f, String indentStr) throws IOException {
+		try(PrintWriter pw=new PrintWriter(new OutputStreamWriter(new FileOutputStream(f), "UTF-8"))){
+			JSONRenderer.render(o, new PrintWriterCharSink(pw), "\t");
+			if(pw.checkError())
+				throw new IOException("Unkown IO Error");
+		}
 	}
 }

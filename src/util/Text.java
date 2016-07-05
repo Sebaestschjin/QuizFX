@@ -5,7 +5,7 @@ package util;
  */
 public class Text {
 
-    public static String TITLE = "Sex-Duell";
+    public static String APPNAME = "Sex-Duell";
 
     public static String START = "Start";
 

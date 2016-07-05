@@ -3,7 +3,9 @@ package ui.screen;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import util.Style;
 import util.Text;
 
 /**
@@ -18,35 +20,29 @@ public class MainMenuScreen extends UIScreen {
     public Node createUI() {
         VBox pane = new VBox();
 
-        pane.setAlignment(Pos.BASELINE_CENTER);
+        pane.setAlignment(Pos.CENTER);
         pane.setSpacing(20);
 
-        final Button start = new Button(Text.START);
+		// Title
+		Label heading = new Label(Text.APPNAME);
+		heading.getStyleClass().add(Style.TITLE);
+		sizer.font(heading, 0.05);
+
+        Button start = new Button(Text.START);
         start.setOnMouseClicked(event ->
                 controller.titleScreenDismissed()
         );
+		sizer.font(start);
+		sizer.width(start, 0.5);
 
-        final Button hallOfFame = new Button(Text.HALL_OF_FAME);
-        hallOfFame.setOnMouseClicked(event ->
-                controller.winnerScreenDismissed()
-        );
-
-        /*
-        final Button end = new Button(Text.EXIT);
+        Button end = new Button(Text.EXIT);
         end.setOnMouseClicked(event ->
-                controller.gameEnded()
+                scene.getWindow().hide()
         );
-        */
+		sizer.font(end);
+		sizer.width(end, 0.5);
 
-        pane.getChildren().addAll(start, hallOfFame);
-
-        // --- Test ---
-        pane.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
-                    final int MARGIN = 20;
-                    hallOfFame.setPrefWidth(newValue.getWidth() - MARGIN);
-                    hallOfFame.setPrefHeight(newValue.getHeight() / 10 - MARGIN);
-                }
-        );
+        pane.getChildren().addAll(heading, start, end);
 
         return pane;
     }

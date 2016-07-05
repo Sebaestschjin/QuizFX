@@ -5,7 +5,7 @@ public interface ControllerCallback {
 	void titleScreenDismissed();
 	void categorySelected(int index);
 	void cancelGame();
-	void roundOverwiewDismissed();
+	void roundOverviewDismissed();
 	void team1AnswerEntered(int index);
 	void team2AnswerEntered(int index);
 	void solutionScreenDismissed();

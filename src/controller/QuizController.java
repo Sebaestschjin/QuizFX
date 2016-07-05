@@ -26,9 +26,9 @@ public class QuizController implements ControllerCallback{
 		SHOWING_HALL_OF_FAME
 	}
 
-	private static final int TOTAL_ROUNDS = 6;
+	private static final int TOTAL_ROUNDS = 2;
+	private static final int QESTIONS_PER_ROUND_PER_TEAM = 3;
 	private static final int SIMULTANEOUS_CATEGORIES = 3;
-	private static final int QPRPT = 3;
 	private static final boolean REUSE_QUESTIONS = true;
 	private static final long QUESTION_DURATION = 20*1000;
 
@@ -68,7 +68,7 @@ public class QuizController implements ControllerCallback{
 		expectState(State.EXPECTING_TEAM_NAMES);
 		gameState=new GameState(new Team(team1), new Team(team2), categories);
 		controllerState=State.SHOWING_ROUND_OVERVIEW;
-		ui.showRoundOverview(gameState, TOTAL_ROUNDS, QPRPT);
+		ui.showRoundOverview(gameState, TOTAL_ROUNDS, QESTIONS_PER_ROUND_PER_TEAM);
 	}
 
 	@Override
@@ -139,7 +139,8 @@ public class QuizController implements ControllerCallback{
 			if(timer!=null){
 				Thread t = timer;
 				timer=null;
-				t.interrupt();
+				if(t!=null)
+					t.interrupt();
 			}
 		}
 
@@ -148,7 +149,7 @@ public class QuizController implements ControllerCallback{
 
 
 	@Override
-	public void roundOverwiewDismissed() {
+	public void roundOverviewDismissed() {
 		expectState(State.SHOWING_ROUND_OVERVIEW);
 		if(gameState.getRounds().size()<TOTAL_ROUNDS){
 			controllerState=State.SELECTING_CATEGORY;
@@ -157,12 +158,13 @@ public class QuizController implements ControllerCallback{
 				selectedCategories[i]=gameState.getCategory(selectedCategoriesIndices[i]);
 			ui.showCategorySelector(selectedCategories);
 		}else{
+			assert(false);
 			controllerState=State.SHOWING_WINNER;
 			int team1Points=gameState.getTeamPoints(true);
 			int team2Points=gameState.getTeamPoints(false);
 			hof.addEntry(gameState.getTeam(true), team1Points);
 			hof.addEntry(gameState.getTeam(false), team2Points);
-			ui.showWinner(gameState, team1Points, team2Points, TOTAL_ROUNDS, QPRPT);
+			ui.showWinner(gameState, TOTAL_ROUNDS, QESTIONS_PER_ROUND_PER_TEAM);
 		}
 
 
@@ -197,7 +199,8 @@ public class QuizController implements ControllerCallback{
 		synchronized (this) {
 			Thread t = timer;
 			timer=null;
-			t.interrupt();
+			if(t!=null)
+				t.interrupt();
 		}
 		endQuestion();
 	}
@@ -219,7 +222,7 @@ public class QuizController implements ControllerCallback{
 		int tac2=currentRound.getTeamAnswerCount(false);
 		assert(tac1==tac2);
 		int tac=tac1;
-		if(tac>=QPRPT){
+		if(tac>=QESTIONS_PER_ROUND_PER_TEAM){
 			endRound();
 		}else{
 			showQuestion();
@@ -230,16 +233,19 @@ public class QuizController implements ControllerCallback{
 		expectState(State.SHOWING_SOLUTION);
 		if(gameState.getRounds().size()>=TOTAL_ROUNDS){
 			controllerState=State.SHOWING_WINNER;
+			int team1Points=gameState.getTeamPoints(true);
+			int team2Points=gameState.getTeamPoints(false);
+			hof.addEntry(gameState.getTeam(true), team1Points);
+			hof.addEntry(gameState.getTeam(false), team2Points);
+
 			ui.showWinner(
 					gameState, 
-					gameState.getTeamPoints(true), 
-					gameState.getTeamPoints(false), 
 					TOTAL_ROUNDS, 
-					QPRPT
+					QESTIONS_PER_ROUND_PER_TEAM
 					);
 		}else{
 			controllerState=State.SHOWING_ROUND_OVERVIEW;
-			ui.showRoundOverview(gameState, TOTAL_ROUNDS, QPRPT);
+			ui.showRoundOverview(gameState, TOTAL_ROUNDS, QESTIONS_PER_ROUND_PER_TEAM);
 		}
 
 	}
@@ -260,9 +266,10 @@ public class QuizController implements ControllerCallback{
 
 	public void start() {
 		synchronized (this) {
-			//Thread t=timer;
-			//t.interrupt();
-			//timer=null;
+			Thread t=timer;
+			timer=null;
+			if(t!=null)
+				t.interrupt();
 		}
 		controllerState = State.SHOWING_TITLE_SCREEN;
 		ui.showTitleScreen();

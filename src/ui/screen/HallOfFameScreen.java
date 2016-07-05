@@ -2,6 +2,7 @@ package ui.screen;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import model.HallOfFame;
 import model.Team;
@@ -27,6 +28,8 @@ public class HallOfFameScreen extends UIScreen {
 	@Override
 	public Node createUI() {
 		VBox pane = new VBox();
+
+		pane.getChildren().add(new Label("Hall of Fame coming soon..."));
 
 		Button next = new Button(Text.NEXT);
 		next.setOnMouseClicked(event ->

@@ -10,7 +10,7 @@ import json.JSOCodec;
 import json.JSOWithPosition;
 import json.parser.JSONParser;
 import model.*;
-import ui.ScreenStack;
+import ui.JavaFXUI;
 import util.Resource;
 import util.Text;
 
@@ -21,26 +21,25 @@ import java.util.List;
 /**
  *
  */
-public class SexDuell extends Application {
+public class MainFX extends Application {
 
     /** The shown stage. */
-    private Stage primaryStage;
+    public static Stage primaryStage;
 
-    /** The handler that loads screens. */
-    private  ScreenStack screenLoader;
+    /** The handler that loads the screens. */
+    private JavaFXUI screenLoader;
 
 	@Override
 	public void start(Stage stage) throws Exception {
 		primaryStage = stage;
 
 		// default settings
-		stage.setTitle(Text.TITLE);
-		stage.initStyle(StageStyle.UTILITY);
+		stage.setTitle(Text.APPNAME);
 		stage.setMinWidth(600);
 		stage.setMinHeight(480);
 
-		// SexDuell scene window
-		screenLoader = new ScreenStack();
+		// MainFX scene window
+		screenLoader = new JavaFXUI();
 		final Scene scene = new Scene(screenLoader, 600, 500);
 		scene.getStylesheets().add(getClass().getResource(Resource.STYLE).toExternalForm());
 		stage.setScene(scene);
@@ -53,7 +52,7 @@ public class SexDuell extends Application {
 		// let's go!
 		stage.show();
 
-		loadFile("testb.json");
+		loadFile("questions.json");
 	}
 
 	public static void main(String[] args) throws IOException {
