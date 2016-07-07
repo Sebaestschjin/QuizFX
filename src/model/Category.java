@@ -17,8 +17,8 @@ import json.DataFormatException;
 import json.JSOCodec;
 import json.JSOEncodable;
 import json.JSOWithPosition;
-import json.parser.PosBuffer;
 import main.Paths;
+import util.Colors;
 import util.Weighted;
 
 public class Category implements Weighted, JSOEncodable{
@@ -35,6 +35,24 @@ public class Category implements Weighted, JSOEncodable{
 		this.color=c;
 		this.imageFile=imageFile;
 		this.weight=weight;
+	}
+	public Category(String title, java.awt.Color c, File imageFile, double weight, Collection<Question> questions){
+		this(title,Colors.toFx(c), imageFile, weight, questions);
+	}
+	public Category withTitle(String title){
+		return new Category(title, color, imageFile, weight, questions);
+	}
+	public Category withColor(Color color){
+		return new Category(title, color, imageFile, weight, questions);
+	}
+	public Category withImageFile(File imageFile){
+		return new Category(title, color, imageFile, weight, questions);
+	}
+	public Category withWeight(double weight){
+		return new Category(title, color, imageFile, weight, questions);
+	}
+	public Category withQuestions(Collection<Question> questions){
+		return new Category(title, color, imageFile, weight, questions);
 	}
 	public String getTitle(){
 		return title;
@@ -61,12 +79,15 @@ public class Category implements Weighted, JSOEncodable{
 	public Color getColor() {
 		return color;
 	}
+	public java.awt.Color getAwtColor() {
+		return Colors.toAwt(color);
+	}
 	@Override
 	public JSOWithPosition encode(JSOCodec c) {
 		Map<String, JSOWithPosition> ret=new HashMap<>();
 		ret.put("name", c.encode(title));
 		ret.put("bild", c.encode(imageFile==null?null:imageFile.getPath()));
-		ret.put("farbe", c.encode(((int)color.getRed()*0xFF)+"/"+((int)color.getGreen()*0xFF)+"/"+((int)color.getBlue()*0xFF)));
+		ret.put("farbe", c.encode(Colors.toString(color)));
 		ret.put("gewicht", c.encode(weight));
 		ret.put("fragen", c.encode(questions));
 		return new JSOWithPosition(ret);
@@ -80,7 +101,7 @@ public class Category implements Weighted, JSOEncodable{
 		String colorString=codec.decode(m.get("farbe"), String.class);
 		if(colorString==null)
 			throw new DataFormatException("\"farbe\" is required", jso.getPosition());
-		Color color=parseColor(colorString, m.get("farbe").getPosition());
+		Color color=Colors.parseColor(colorString, m.get("farbe").getPosition());
 		Double weight=codec.decode(m.get("gewicht"), Double.class);
 		if(weight==null)
 			weight=1.0;
@@ -89,31 +110,9 @@ public class Category implements Weighted, JSOEncodable{
 			throw new DataFormatException("\"fragen\" is required", jso.getPosition());
 		return new Category(title, color, iFile==null?null:new File(iFile), weight, questions);
 	}
-	private static Color parseColor(String s, PosBuffer pos) {
-		int firstSlash=s.indexOf('/');
-		int lastSlash=s.lastIndexOf('/');
-		if(firstSlash!=lastSlash && firstSlash>=0 && lastSlash>=0){
-			try{
-				int r = Integer.parseInt(s.substring(0, firstSlash));
-				int g = Integer.parseInt(s.substring(firstSlash+1, lastSlash));
-				int b = Integer.parseInt(s.substring(lastSlash+1));
-				if(r<0 || g<0 || b<0 || r>0xFF || g>0xFF || b>0xFF)
-					throw new DataFormatException("invalid color string: Number out of range", pos);
-				double factor=1.0/0xFF;
-				return new Color(r*factor, g*factor, b*factor, 1);
-			}catch(NumberFormatException x){
-				throw new DataFormatException("invalid color string", pos);
-			}
 
-		}
-		if(s.length()==6 && s.matches("[0-9a-fA-F]*")){
-			int r = Integer.parseInt(s.substring(0, 2), 16);
-			int g = Integer.parseInt(s.substring(2, 4), 16);
-			int b = Integer.parseInt(s.substring(4, 6), 16);
-			double factor=1.0/0xFF;
-			return new Color(r*factor, g*factor, b*factor, 1);
-
-		}
-		throw new DataFormatException("invalid color string", pos);
+	@Override
+	public String toString() {
+		return title;
 	}
 }

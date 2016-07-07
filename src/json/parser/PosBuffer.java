@@ -45,7 +45,7 @@ public class PosBuffer {
 	}
 	@Override
 	public String toString() {
-		return "'"+name+"' at line "+(line+1)+", column "+(col+1);		
+		return "'"+name+"' in Zeile "+(line+1)+", Spalte "+(col+1);		
 	}
 	public PosBuffer advance(int length) {
 		pos += length;

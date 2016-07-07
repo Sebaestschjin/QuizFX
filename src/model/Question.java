@@ -42,6 +42,35 @@ public class Question implements Weighted, JSOEncodable{
 		this.weight=weight;
 		this.answers.addAll(answers);
 	}
+	public Question withQuestionText(String questionText){
+		return new Question(questionText, questionImageFile, answerText, answerImageFile, answerSource, weight, answers);
+	}
+	public Question withAnswerText(String answerText){
+		return new Question(questionText, questionImageFile, answerText, answerImageFile, answerSource, weight, answers);
+	}
+	public Question withAnswerSource(String answerSource){
+		return new Question(questionText, questionImageFile, answerText, answerImageFile, answerSource, weight, answers);
+	}
+	public Question withQuestionImageFile(File questionImageFile){
+		return new Question(questionText, questionImageFile, answerText, answerImageFile, answerSource, weight, answers);
+	}
+	public Question withAnswerImageFile(File answerImageFile){
+		return new Question(questionText, questionImageFile, answerText, answerImageFile, answerSource, weight, answers);
+	}
+	public Question withWeight(double weight){
+		return new Question(questionText, questionImageFile, answerText, answerImageFile, answerSource, weight, answers);
+	}
+	public Question withAnswers(Answer... answers){
+		return new Question(questionText, questionImageFile, answerText, answerImageFile, answerSource, weight, answers);
+	}
+	public Question withAnswers(Collection<Answer> answers){
+		return new Question(questionText, questionImageFile, answerText, answerImageFile, answerSource, weight, answers);
+	}
+	public Question withAnswer(Answer a){
+		Answer[] as=(Answer[]) answers.toArray(new Answer[answers.size()]);
+		as[a.id]=a;
+		return withAnswers(as);
+	}
 	public String getQuestionText(){
 		return questionText;
 	}
@@ -121,5 +150,9 @@ public class Question implements Weighted, JSOEncodable{
 	}
 	public String getAnswerSource() {
 		return answerSource;
+	}
+	@Override
+	public String toString() {
+		return questionText;
 	}
 }

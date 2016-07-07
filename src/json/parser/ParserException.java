@@ -12,7 +12,7 @@ public class ParserException extends RuntimeException{
 		this.pos=pos.clone();
 	}
 
-	public PosBuffer getPos() {
+	public PosBuffer getPosition() {
 		return pos.clone();
 	}
 
