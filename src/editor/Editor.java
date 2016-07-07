@@ -36,6 +36,7 @@ import json.DataFormatException;
 import json.JSOCodec;
 import json.JSONRenderer;
 import json.JSOWithPosition;
+import json.UnexpectedDataTypeException;
 import json.parser.JSONParser;
 import json.parser.ParserException;
 import json.parser.PosBuffer;
@@ -504,8 +505,9 @@ public class Editor extends JFrame{
 					Color cawt=Colors.toAwt(c);
 					colorB.setBackground(cawt);
 					colorB.setForeground(Colors.getReadable(cawt));
+					colorT.setBackground(TEXTFIELD_OK_BACKGROUND);
 				}catch(DataFormatException x){
-					//ignore
+					colorT.setBackground(TEXTFIELD_ERROR_BACKGROUND);
 				}
 			}
 
@@ -602,8 +604,11 @@ public class Editor extends JFrame{
 		} catch (DataFormatException e) {
 			JOptionPane.showMessageDialog(this, "Datenformatfehler in "+e.getPosition()+": "+e.getMessage(), 
 					"Fehler beim Laden der Datei", JOptionPane.ERROR_MESSAGE);
+		} catch (UnexpectedDataTypeException e) {
+			JOptionPane.showMessageDialog(this, "Datenformatfehler in "+e.getPosition()+": "+e.getMessage(), 
+					"Fehler beim Laden der Datei", JOptionPane.ERROR_MESSAGE);
 		} catch (ParserException e) {
-			JOptionPane.showMessageDialog(this, "JSON-Syntaxfehler in "+e.getPosition()+": "+e.getMessage(), 
+			JOptionPane.showMessageDialog(this, "JSON-Syntaxfehler in "+e.getPosition()+": "+e.message, 
 					"Fehler beim Laden der Datei", JOptionPane.ERROR_MESSAGE);
 		}
 

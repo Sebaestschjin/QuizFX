@@ -15,7 +15,6 @@ public class DataFormatException extends RuntimeException {
 		return pos;
 	}
 	public String toString(){
-		//printStackTrace();
 		return getClass().getName()+(pos==null?"":": At "+pos)+": "+getMessage();
 	}
 }
