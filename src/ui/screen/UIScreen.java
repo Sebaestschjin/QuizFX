@@ -4,8 +4,11 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import ui.ControllerCallback;
 import ui.Sizer;
+import util.Text;
 
 /**
  * @author Sebastian Stern

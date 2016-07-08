@@ -28,7 +28,7 @@ public class MainMenuScreen extends UIScreen {
 		// Title
 		Label heading = new Label(Text.APPNAME);
 		heading.getStyleClass().add(Style.TITLE);
-		sizer.font(heading, 0.05);
+		sizer.font(heading, 0.1);
 		pane.getChildren().add(heading);
 
 		// Buttons showing the next screen
@@ -41,7 +41,7 @@ public class MainMenuScreen extends UIScreen {
                 scene.getWindow().hide()
         );
 		sizer.font(end);
-		sizer.width(end, 0.5);
+		sizer.width(end);
 
         pane.getChildren().add(end);
 
@@ -54,7 +54,7 @@ public class MainMenuScreen extends UIScreen {
 				controller.titleScreenDismissed(dismissOption)
 		);
 		sizer.font(butt);
-		sizer.width(butt, 0.5);
+		sizer.width(butt);
 
 		parent.getChildren().add(butt);
 	}

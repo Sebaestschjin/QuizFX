@@ -30,8 +30,8 @@ import java.util.List;
 public class QuestionScreen extends UIScreen {
 
 	// TODO allow key-bindings to be set by user
-	private List<KeyCode> team1Keys = Arrays.asList(KeyCode.Q, KeyCode.W, KeyCode.E, KeyCode.R);
-	private List<KeyCode> team2Keys = Arrays.asList(KeyCode.H, KeyCode.J, KeyCode.K, KeyCode.L);
+	private List<KeyCode> team1Keys = Arrays.asList(KeyCode.Q, KeyCode.E, KeyCode.Y, KeyCode.C);
+	private List<KeyCode> team2Keys = Arrays.asList(KeyCode.NUMPAD7, KeyCode.NUMPAD9, KeyCode.NUMPAD1, KeyCode.NUMPAD3);
 
 	private Question question;
 
@@ -82,7 +82,6 @@ public class QuestionScreen extends UIScreen {
 
 		// set event-handler for inputting the teams answers
 		inputHandler = event -> {
-				System.out.println(event.getCode());
 				int index = team1Keys.indexOf(event.getCode());
 				if (index != -1)
 					controller.team1AnswerEntered(index);

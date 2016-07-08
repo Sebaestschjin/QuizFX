@@ -32,7 +32,7 @@ public class QuizController implements ControllerCallback{
 
 	private static final int TOTAL_ROUNDS = 2;
 	private static final int QESTIONS_PER_ROUND_PER_TEAM = 3;
-	private static final int SIMULTANEOUS_CATEGORIES = 3;
+	private static final int SIMULTANEOUS_CATEGORIES = 4;
 	private static final boolean REUSE_QUESTIONS = true;
 
 	State controllerState;

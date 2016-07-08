@@ -1,5 +1,6 @@
 package ui.screen;
 
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -9,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import model.GameState;
+import ui.Sizer;
 import util.Text;
 
 /**
@@ -21,6 +23,7 @@ public class RoundOverviewScreen extends UIScreen {
 	private int questionsPerRound;
 
 	private int totalCols;
+	private boolean handleAsWinnerScreen;
 
 	public RoundOverviewScreen(GameState gameState, int totalRounds, int questionsPerRound) {
 		this.gameState = gameState;
@@ -28,6 +31,8 @@ public class RoundOverviewScreen extends UIScreen {
 		this.questionsPerRound = questionsPerRound;
 
 		this.totalCols = questionsPerRound * teams + (teams - 1);
+
+		handleAsWinnerScreen = gameState.getRounds().size() == totalRounds;
 	}
 
 	@Override
@@ -39,8 +44,6 @@ public class RoundOverviewScreen extends UIScreen {
 			createTeam(team, layout);
 		}
 
-		// TODO score overview
-
 		// question results
 		for (int round = 0; round < totalRounds; ++round) {
 			createRound(round, layout);
@@ -49,21 +52,30 @@ public class RoundOverviewScreen extends UIScreen {
 		// button to continue
 		Button next = new Button(Text.NEXT);
 		next.setOnMouseClicked(event ->
-				controller.roundOverviewDismissed()
+				finish()
 		);
 		next.setOnKeyPressed(event -> {
 				if (event.getCode() == KeyCode.ENTER)
-					controller.roundOverviewDismissed();
+					finish();
 			}
 		);
+
 		GridPane.setConstraints(next, 0, totalRounds + 1);
 		GridPane.setColumnSpan(next, totalCols);
-		next.setAlignment(Pos.CENTER);
+		GridPane.setHalignment(next, HPos.CENTER);
 		sizer.font(next);
-		sizer.width(next, 0.5);
+		sizer.width(next, 0.2);
 		layout.getChildren().add(next);
 
 		return layout;
+	}
+
+
+	private void finish() {
+		if (handleAsWinnerScreen)
+			controller.winnerScreenDismissed();
+		else
+			controller.roundOverviewDismissed();
 	}
 
 	private GridPane createLayout() {
@@ -82,12 +94,21 @@ public class RoundOverviewScreen extends UIScreen {
 	}
 
 	private void createTeam(int team, Pane parent) {
-		int gap = team * (questionsPerRound + 1);
+		boolean team1 = team == 0;
 
-		Label teamName = new Label(gameState.getTeam(team == 0).getName());
+		Label teamName = new Label(gameState.getTeam(team1).getName());
+
 		sizer.font(teamName);
-		GridPane.setConstraints(teamName, questionsPerRound / 2 + gap, 0);
-		parent.getChildren().add(teamName);
+		GridPane.setConstraints(teamName, team1 ? 0 : questionsPerRound + 2, 0);
+		GridPane.setHalignment(teamName, team1 ? HPos.LEFT : HPos.RIGHT);
+		GridPane.setColumnSpan(teamName, 2);
+
+		Label teamScore = new Label("" + gameState.getTeamPoints(team1));
+		sizer.font(teamScore, Sizer.FONT_RATIO_GENERAL * 1.60);
+		GridPane.setHalignment(teamScore, team1 ? HPos.RIGHT : HPos.LEFT);
+		GridPane.setConstraints(teamScore, team1 ? questionsPerRound - 1 : questionsPerRound + 1, 0);
+
+		parent.getChildren().addAll(teamName, teamScore);
 	}
 
 	private void createRound(int round, Pane parent) {
@@ -100,8 +121,9 @@ public class RoundOverviewScreen extends UIScreen {
 	}
 
 	private void createCategory(int round, Pane parent) {
-		if (gameState.getRounds().size() > round && gameState.getRounds().get(round).isFinnised()) {
+		if (gameState.getRounds().size() > round) {
 			Label category = new Label(gameState.getCategory(round).getTitle());
+			category.setWrapText(true);
 			sizer.font(category);
 			GridPane.setConstraints(category, questionsPerRound, round + 1);
 			parent.getChildren().add(category);

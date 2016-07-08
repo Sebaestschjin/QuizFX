@@ -1,6 +1,7 @@
 package util;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import json.DataFormatException;
 import json.parser.PosBuffer;
 
@@ -17,6 +18,11 @@ public class Colors {
 
 		return Color.color(r, g, b);
 	}
+
+	public static Color getRandom() {
+		return Color.color(Math.random(), Math.random(), Math.random());
+	}
+
     public static java.awt.Color getReadable(final java.awt.Color color) {
 		int r = color.getRed() > 0x7F ? 0 : 0xFF;
 		int g = color.getGreen() > 0x7F ? 0 : 0xFF;

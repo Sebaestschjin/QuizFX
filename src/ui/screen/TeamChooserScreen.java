@@ -41,7 +41,7 @@ public class TeamChooserScreen extends UIScreen {
 				verifyInput()
         );
 		sizer.font(nextButton);
-		sizer.width(nextButton, 0.5);
+		sizer.width(nextButton);
 
 		// cancel the game
         Button backButton = new Button(Text.BACK);
@@ -49,7 +49,7 @@ public class TeamChooserScreen extends UIScreen {
                 controller.cancelGame()
         );
 		sizer.font(backButton);
-		sizer.width(backButton, 0.5);
+		sizer.width(backButton);
 
         pane.getChildren().addAll(nextButton, backButton);
         return pane;

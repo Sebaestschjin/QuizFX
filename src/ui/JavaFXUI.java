@@ -128,7 +128,7 @@ public class JavaFXUI extends StackPane implements QuizUI {
 
 	@Override
 	public void showWinner(GameState gs, int totalRounds, int questionsPerRoundPerTeam) {
-		loadScreen(new WinnerScreen(gs, gs.getTeamPoints(true), gs.getTeamPoints(false)));
+		loadScreen(new RoundOverviewScreen(gs, totalRounds, questionsPerRoundPerTeam));
 	}
 
 	@Override
