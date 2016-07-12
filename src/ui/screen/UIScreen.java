@@ -2,10 +2,16 @@ package ui.screen;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import ui.ControllerCallback;
 import ui.Sizer;
 import util.Text;
@@ -65,6 +71,10 @@ public abstract class UIScreen {
 		DoubleProperty prop = new SimpleDoubleProperty();
 		prop.bind(scene.widthProperty().multiply(ratio));
 		return prop;
+	}
+
+	public void setBackground(Region region, Color color) {
+		region.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
 	}
 
 }

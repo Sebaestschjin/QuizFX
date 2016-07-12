@@ -11,6 +11,9 @@ import javafx.util.Duration;
 import model.*;
 import ui.screen.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Sebastian Stern
  */
@@ -91,6 +94,13 @@ public class JavaFXUI extends StackPane implements QuizUI {
 
 	@Override
 	public void showTitleScreen() {
+		boolean debug = false;
+
+		if (debug) {
+			Answer[] answers = {new Answer("Richtig", 1), new Answer("Falsch", 2), new Answer("Auch falsch", 3), new Answer("Immer noch falsch", 4)};
+			Question q = new Question("Das ist nur ein Test", null, "BlaBlaBla", null, "Mein Kopf", 1, answers);
+			loadScreen(new QuestionScreen(null, q, answers));
+		} else
 		loadScreen(new MainMenuScreen());
 	}
 
@@ -111,13 +121,13 @@ public class JavaFXUI extends StackPane implements QuizUI {
 
 	@Override
 	public void showQuestion(GameState gs, Question q, Answer[] permutedAnswers) {
-		currentQuestion = new QuestionScreen(q, permutedAnswers);
+		currentQuestion = new QuestionScreen(gs, q, permutedAnswers);
 		loadScreen(currentQuestion);
 	}
 
 	@Override
 	public void showSolution(GameState gs, Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex) {
-		loadScreen(new AnswerScreen(gs, q, permutedAnswers, team1AnswerIndex, team2AnswerIndex));
+		currentQuestion.showAnswer(team1AnswerIndex, team2AnswerIndex);
 	}
 
 	@Override
@@ -138,8 +148,7 @@ public class JavaFXUI extends StackPane implements QuizUI {
 
 	@Override
 	public void giveDoubleAnswerMessage(boolean team1) {
-		// TODO implement
-		System.out.println("Method \"" + new Object(){}.getClass().getEnclosingMethod().getName() + "\" not yet implemented");
+		// not really needed here as we already handle the event in the QuestionScreen itself
 	}
 
 	@Override

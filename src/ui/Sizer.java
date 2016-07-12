@@ -16,6 +16,8 @@ public class Sizer {
 
 	public final static double BUTTON_WIDTH_GENERAL = 0.4;
 
+	public final static int BG_RATIO = 7;
+
 	private UIScreen parent;
 
 	public Sizer(UIScreen parent) {

@@ -1,8 +1,10 @@
 package ui.screen;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -15,6 +17,7 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Pair;
 import model.Category;
 import model.GameState;
+import util.Colors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,20 +119,22 @@ public class CategoryChooserScreen extends UIScreen {
 			final int cat = i;
 			Pair<Shape, Rectangle> created = createShape(true, cat);
 
+			EventHandler<MouseEvent> clickHandler = event -> controller.categorySelected(cat);
+
 			Shape shape = created.getKey();
-			shape.setOnMouseClicked(event ->
-					controller.categorySelected(cat)
-			);
+			shape.setOnMouseClicked(clickHandler);
 			shape.setFill(categories[cat].getColor());
 			shapes.add(shape);
 
 			// category name as text
 			Rectangle bounding = created.getValue();
 			Text t = new Text(categories[cat].getTitle());
+			t.setOnMouseClicked(clickHandler);
 			t.setTextAlignment(TextAlignment.CENTER);
 			t.setX(bounding.getX() + unit);
 			t.setY(bounding.getY() + unit * 3);
 			t.setWrappingWidth(bounding.getWidth() - unit * 2);
+			t.setFill(Colors.getReadable(categories[cat].getColor()));
 			sizer.font(t);
 			t.getTransforms().add(new Rotate(i * 90));
 			shapes.add(t);

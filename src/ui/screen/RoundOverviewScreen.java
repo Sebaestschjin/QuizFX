@@ -11,6 +11,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import model.GameState;
 import ui.Sizer;
+import util.Colors;
 import util.Text;
 
 /**
@@ -122,7 +123,7 @@ public class RoundOverviewScreen extends UIScreen {
 
 	private void createCategory(int round, Pane parent) {
 		if (gameState.getRounds().size() > round) {
-			Label category = new Label(gameState.getCategory(round).getTitle());
+			Label category = new Label(gameState.getRounds().get(round).getCategory().getTitle());
 			category.setWrapText(true);
 			sizer.font(category);
 			GridPane.setConstraints(category, questionsPerRound, round + 1);
@@ -142,7 +143,7 @@ public class RoundOverviewScreen extends UIScreen {
 				color = Color.GRAY;
 			else {
 				color = gameState.getRounds().get(round).getTeamResults(team == 0, question) ?
-						Color.GREEN : Color.RED;
+						Colors.GREEN : Colors.RED;
 			}
 
 			box.setBackground(new Background(new BackgroundFill(color, CornerRadii.EMPTY, Insets.EMPTY)));

@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import ui.Sizer;
 import util.Colors;
 import util.Resource;
 
@@ -15,8 +16,6 @@ import util.Resource;
  * @author Sebastian Stern
  */
 public class BackgroundScreen extends UIScreen {
-
-    private final int sizeRatio = 7;
 
     public BackgroundScreen() {
     }
@@ -42,7 +41,7 @@ public class BackgroundScreen extends UIScreen {
             ImageView image = new ImageView(new Image(getClass().getResourceAsStream(resourceName)));
             image.setPreserveRatio(true);
 
-            image.fitWidthProperty().bind(scene.widthProperty().divide(sizeRatio));
+            image.fitWidthProperty().bind(scene.widthProperty().divide(Sizer.BG_RATIO));
             BorderPane.setAlignment(image, borderPosition);
 
             switch (borderPosition) {

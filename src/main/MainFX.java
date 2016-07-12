@@ -48,7 +48,7 @@ public class MainFX extends Application {
 		// enable full screen without exit possibility
 		stage.setFullScreen(true);
 		stage.setFullScreenExitHint("");
-		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+		stage.setFullScreenExitKeyCombination(KeyCombination.valueOf("F11"));
 
 		// let's go!
 		stage.show();

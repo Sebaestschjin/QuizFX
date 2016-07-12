@@ -11,6 +11,16 @@ import json.parser.PosBuffer;
 public class Colors {
     public final static Color BLUE = Color.rgb(115, 176, 194);
 
+	public final static Color PETROL = Color.rgb(3, 127, 127);
+
+	public final static Color GREEN = Color.rgb(102, 255, 0);
+
+	public final static Color RED = Color.rgb(255, 31, 31);
+
+	public final static Color TEAM1 = Color.rgb(203, 147, 0);
+
+	public final static Color Team2 = Color.rgb(121, 105, 98);
+
     public static Color getReadable(final Color color) {
 		double r = color.getRed() > 0.5 ? 0 : 1;
 		double g = color.getGreen() > 0.5 ? 0 : 1;
@@ -21,6 +31,10 @@ public class Colors {
 
 	public static Color getRandom() {
 		return Color.color(Math.random(), Math.random(), Math.random());
+	}
+
+	public static Color team(boolean first) {
+		return first ? TEAM1 : Team2;
 	}
 
     public static java.awt.Color getReadable(final java.awt.Color color) {
