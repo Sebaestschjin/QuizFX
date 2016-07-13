@@ -2,6 +2,7 @@ package editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -61,6 +62,7 @@ public class Editor extends JFrame{
 	Question currentQuestion=null;
 	boolean changed=false;
 	JTabbedPane tabs=new JTabbedPane();
+	List<Question> questionClipboard=Collections.emptyList();
 	public static void main(String[] args) {
 		Editor ed=new Editor();
 		if(args.length>0){
@@ -105,13 +107,18 @@ public class Editor extends JFrame{
 		JSplitPane qTab=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
 		tabs.addTab("Fragen", qTab);
 		JPanel lp=new JPanel(new BorderLayout());
-		Box lb=Box.createVerticalBox();
 		lp.add(new JScrollPane(questionList), BorderLayout.CENTER);
+		Box lb=Box.createVerticalBox();
 		lp.add(lb, BorderLayout.SOUTH);
 		JButton addQ=new JButton("Neue Frage");
 		JButton delQ=new JButton("Frage löschen");
-		lb.add(addQ);
-		lb.add(delQ);
+		JButton copyQ=new JButton("Frage kopieren");
+		JButton pasteQ=new JButton("Frage einfügen");
+		pasteQ.setEnabled(false);
+		JPanel edButtons=new JPanel(new GridLayout(2,2));
+		edButtons.add(addQ); edButtons.add(copyQ);
+		edButtons.add(delQ); edButtons.add(pasteQ);
+		lb.add(edButtons);
 		qTab.setLeftComponent(lp);
 
 		Box eb=Box.createVerticalBox();
@@ -151,13 +158,14 @@ public class Editor extends JFrame{
 		}
 
 		ep.add(new JLabel("Gewicht"));
-		SpinnerNumberModel weight=new SpinnerNumberModel(1, 0.00000000001, 10, 1);
+		SpinnerNumberModel weight=new SpinnerNumberModel(1, 0, 10, 1);
 		JSpinner weightSpinner = new JSpinner(weight);
 		ep.add(weightSpinner);
 
 		SpringUtilities.makeCompactGrid(ep, 6+answers.length, 2, 0, 0, 10, 10);
 
 		delQ.setEnabled(false);
+		copyQ.setEnabled(false);
 		qText.setEnabled(false);
 		qImgB.setEnabled(false);
 		qImgT.setEnabled(false);
@@ -171,6 +179,7 @@ public class Editor extends JFrame{
 		questionList.addListSelectionListener(lse -> {
 			boolean sel=questionList.getSelectedIndex()!=-1;
 			delQ.setEnabled(sel);
+			copyQ.setEnabled(sel);
 			qText.setEnabled(sel);
 			qImgB.setEnabled(sel);
 			qImgT.setEnabled(sel);
@@ -211,12 +220,7 @@ public class Editor extends JFrame{
 			for(int i=0; i<as.length; ++i)
 				as[i]=new Answer("", i);
 			Question nq=new Question("?", null, "", null, "", 1, as);
-			DefaultListModel<Question> m = questionListModel();
-			m.addElement(nq);
-			ArrayList<Question> qs=new ArrayList<>(currentCategory.getQuestions());
-			qs.add(nq);
-			updateCurrentCategegory(currentCategory.withQuestions(qs));
-			questionList.setSelectedIndex(m.size()-1);
+			appendQuestion(nq);
 		});
 		delQ.addActionListener(ae->{
 			int i=questionList.getSelectedIndex();
@@ -230,6 +234,16 @@ public class Editor extends JFrame{
 					questionList.setSelectedIndex(i);
 				else
 					questionList.setSelectedIndex(m.size()-1);
+		});
+		copyQ.addActionListener(ae->{
+			pasteQ.setEnabled(true);
+			List<Question> qs = questionList.getSelectedValuesList();
+			copyToClipboard(qs);
+		});
+		pasteQ.addActionListener(ae-> {
+			List<Question> qs=getClipboardContent();
+			for(Question q: qs)
+				appendQuestion(q);
 		});
 		weight.addChangeListener(ce -> {
 			if(currentQuestion==null) return;
@@ -256,7 +270,7 @@ public class Editor extends JFrame{
 					updateCurrentQuestion(currentQuestion.withAnswerSource(sText.getText()));
 			}
 		});
-	
+
 		qImgB.addActionListener(ae -> {
 			if(currentQuestion==null) return;
 			int opt=imgFC.showOpenDialog(qImgB);
@@ -329,6 +343,20 @@ public class Editor extends JFrame{
 		for(int i=0; i<answers.length; ++i)
 			answers[i].getDocument().addDocumentListener(answerListener);
 	}
+	private List<Question> getClipboardContent() {
+		return questionClipboard;
+	}
+	private void copyToClipboard(List<Question> qs) {
+		questionClipboard=qs;
+	}
+	private void appendQuestion(Question nq) {
+		DefaultListModel<Question> m = questionListModel();
+		m.addElement(nq);
+		ArrayList<Question> qs=new ArrayList<>(currentCategory.getQuestions());
+		qs.add(nq);
+		updateCurrentCategegory(currentCategory.withQuestions(qs));
+		questionList.setSelectedIndex(m.size()-1);
+	}
 	void makeFileTab(){
 		Box fileTab=Box.createVerticalBox();
 		tabs.addTab("Datei", fileTab);
@@ -380,7 +408,7 @@ public class Editor extends JFrame{
 		ep.add(title);
 
 		ep.add(new JLabel("Gewicht"));
-		SpinnerNumberModel weight=new SpinnerNumberModel(1, 0.00000000001, 10, 1);
+		SpinnerNumberModel weight=new SpinnerNumberModel(1, 0, 10, 1);
 		JSpinner weightSpinner = new JSpinner(weight);
 		ep.add(weightSpinner);
 
@@ -453,9 +481,12 @@ public class Editor extends JFrame{
 					loadedCategories.setSelectedIndex(m.size()-1);
 
 		});
-		title.addActionListener(ae -> {
-			if(currentCategory==null) return;
-			updateCurrentCategegory(currentCategory.withTitle(title.getText()));
+		title.getDocument().addDocumentListener(new DocumentAdapter() {
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				if(currentCategory==null) return;
+				updateCurrentCategegory(currentCategory.withTitle(title.getText()));
+			}
 		});
 		weight.addChangeListener(ce -> {
 			if(currentCategory==null) return;
@@ -580,7 +611,7 @@ public class Editor extends JFrame{
 		int r=JOptionPane.showConfirmDialog(this, "Willst du das wirklich tun? \n"
 				+ "Die geladenen Daten haben ungespeicherte Änderungen.", "Warnung: Ungespeicherte Änderungen", 
 				JOptionPane.YES_NO_OPTION);
-		return r==JOptionPane.NO_OPTION;
+		return r!=JOptionPane.YES_OPTION;
 	}
 	private void showOpenDialog() {
 		boolean o=dataLossWarning();
@@ -591,6 +622,7 @@ public class Editor extends JFrame{
 		clearData();
 		addData(jsonFC.getSelectedFile());
 		changed=false;
+		opened=jsonFC.getSelectedFile();
 	}
 	private void addData(File file) {
 		JSOWithPosition quizDataJSO;
