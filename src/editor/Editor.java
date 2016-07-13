@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -163,15 +162,15 @@ public class Editor extends JFrame implements ClipboardOwner{
 		JTextField qImgT=new JTextField(30);
 		ep.add(qImgT);
 
-		ep.add(new JLabel("Antwort-Erklärungstext"));
+		ep.add(new JLabel("Lösungs-Erklärungstext"));
 		JTextArea aText=new JTextArea(3, 30);
 		ep.add(new JScrollPane(aText));
 
-		ep.add(new JLabel("Antwort-Quellenangabe"));
+		ep.add(new JLabel("Lösungs-Quellenangabe"));
 		JTextArea sText=new JTextArea(3, 30);
 		ep.add(new JScrollPane(sText));
 
-		JButton aImgB=new JButton("Antwort-Erklärungsbild...");
+		JButton aImgB=new JButton("Lösungs-Erklärungsbild...");
 		ep.add(aImgB);
 		JTextField aImgT=new JTextField(30);
 		ep.add(aImgT);
@@ -372,8 +371,6 @@ public class Editor extends JFrame implements ClipboardOwner{
 	}
 	private List<Question> getClipboardContent() {
 		String str;
-		System.out.println(Arrays.asList(Toolkit.getDefaultToolkit().getSystemClipboard().
-				getContents(this).getTransferDataFlavors()));
 		try {
 			str=(String) Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(questionsFlavor);
 		} catch (HeadlessException | UnsupportedFlavorException | IOException e1) {
