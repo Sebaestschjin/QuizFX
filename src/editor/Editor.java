@@ -3,14 +3,24 @@ package editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -47,11 +57,21 @@ import model.Category;
 import model.Question;
 import util.Colors;
 import util.SpringUtilities;
+import util.StringBuilderCharSink;
 
-public class Editor extends JFrame{
+public class Editor extends JFrame implements ClipboardOwner{
+	private static final String MIME_TYPE_QUESTIONS = "application/x-json-quiz-questions; class=java.lang.String";
 	private static final long serialVersionUID = -6193549599266486312L;
 	protected static final Color TEXTFIELD_ERROR_BACKGROUND = new Color(0xFFDDDD);
 	protected static final Color TEXTFIELD_OK_BACKGROUND = new Color(0xFFFFFF);
+	static DataFlavor questionsFlavor;
+	static{
+		try {
+			questionsFlavor=new DataFlavor(MIME_TYPE_QUESTIONS);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 	JFileChooser jsonFC=new JFileChooser(Paths.resourcesDir);
 	JFileChooser imgFC=new JFileChooser(Paths.resourcesDir);
 	JColorChooser jcc=new JColorChooser();
@@ -62,7 +82,7 @@ public class Editor extends JFrame{
 	Question currentQuestion=null;
 	boolean changed=false;
 	JTabbedPane tabs=new JTabbedPane();
-	List<Question> questionClipboard=Collections.emptyList();
+	//String questionClipboard="[]";
 	public static void main(String[] args) {
 		Editor ed=new Editor();
 		if(args.length>0){
@@ -114,7 +134,11 @@ public class Editor extends JFrame{
 		JButton delQ=new JButton("Frage löschen");
 		JButton copyQ=new JButton("Frage kopieren");
 		JButton pasteQ=new JButton("Frage einfügen");
-		pasteQ.setEnabled(false);
+		final Runnable updatePasteQEnabled=
+				()->pasteQ.setEnabled(Toolkit.getDefaultToolkit().getSystemClipboard().
+						isDataFlavorAvailable(questionsFlavor));
+		updatePasteQEnabled.run();
+		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(fe->updatePasteQEnabled.run());
 		JPanel edButtons=new JPanel(new GridLayout(2,2));
 		edButtons.add(addQ); edButtons.add(copyQ);
 		edButtons.add(delQ); edButtons.add(pasteQ);
@@ -344,10 +368,30 @@ public class Editor extends JFrame{
 			answers[i].getDocument().addDocumentListener(answerListener);
 	}
 	private List<Question> getClipboardContent() {
-		return questionClipboard;
+		String str;
+		System.out.println(Arrays.asList(Toolkit.getDefaultToolkit().getSystemClipboard().
+				getContents(this).getTransferDataFlavors()));
+		try {
+			str=(String) Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(questionsFlavor);
+		} catch (HeadlessException | UnsupportedFlavorException | IOException e1) {
+			return Collections.emptyList();
+		}
+		JSOWithPosition jso;
+		try {
+			jso = new JSONParser().parse(new StringReader(str), "clipboard");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+		return JSOCodec.std.decodeList(jso, Question.class);
 	}
 	private void copyToClipboard(List<Question> qs) {
-		questionClipboard=qs;
+		StringBuilderCharSink cs=new StringBuilderCharSink();
+		JSONRenderer.render(JSOCodec.std.encode(qs), cs, "");
+		String strRep = cs.toString();
+		Toolkit.getDefaultToolkit().getSystemClipboard()
+		.setContents(new DataHandler(strRep, MIME_TYPE_QUESTIONS), this);
+		//questionClipboard=strRep;
 	}
 	private void appendQuestion(Question nq) {
 		DefaultListModel<Question> m = questionListModel();
@@ -673,6 +717,10 @@ public class Editor extends JFrame{
 		}catch(IOException e){
 			JOptionPane.showMessageDialog(this, "Ein-/Ausgabefehler", "Fehler beim Speichern der Datei", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	@Override
+	public void lostOwnership(Clipboard clipboard, Transferable contents) {
+
 	}
 
 }
