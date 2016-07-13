@@ -1,8 +1,11 @@
 package controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import main.PersistentState;
 import model.Answer;
@@ -30,16 +33,16 @@ public class QuizController implements ControllerCallback{
 		SHOWING_SETTINGS,
 	}
 
-	private static final int TOTAL_ROUNDS = 2;
-	private static final int QESTIONS_PER_ROUND_PER_TEAM = 3;
 	private static final int SIMULTANEOUS_CATEGORIES = 4;
-	private static final boolean REUSE_QUESTIONS = true;
+	private static final boolean REUSE_QUESTIONS = !true;
+	private static final boolean REUSE_CATEGORIES = true;
 
 	State controllerState;
 	GameState gameState;
 	List<Category> categories;
 	QuizUI ui;
 	HallOfFame hof;
+	Map<Category, List<Question>> remainingQuestions;
 
 
 	Thread timer;
@@ -54,6 +57,21 @@ public class QuizController implements ControllerCallback{
 		this.ui=ui;
 		this.hof=hof;
 		ui.setControllerCallback(this);
+		remainingQuestions=new HashMap<>();
+	}
+	public List<Question> getRemainingQuestionsList(Category c) {
+		if(PersistentState.settings.isConsumeQuestions()){
+			List<Question> ret=remainingQuestions.get(c);
+			if(ret==null){
+				ret=new ArrayList<>();
+				remainingQuestions.put(c, ret);
+			}
+			if(ret.size()==0)
+				ret.addAll(c.getQuestions());
+			return ret;
+		}else{
+			return new ArrayList<>(c.getQuestions());
+		}
 	}
 	private void expectState(State s){
 		if(controllerState!=s){
@@ -71,7 +89,8 @@ public class QuizController implements ControllerCallback{
 		expectState(State.EXPECTING_TEAM_NAMES);
 		gameState=new GameState(new Team(team1), new Team(team2), categories);
 		controllerState=State.SHOWING_ROUND_OVERVIEW;
-		ui.showRoundOverview(gameState, TOTAL_ROUNDS, QESTIONS_PER_ROUND_PER_TEAM);
+		Settings s = PersistentState.settings;
+		ui.showRoundOverview(gameState, s.getRounds(), s.getQuestionsPerRound());
 	}
 
 	@Override
@@ -98,9 +117,9 @@ public class QuizController implements ControllerCallback{
 		expectState(State.SELECTING_CATEGORY);
 		Category selected=selectedCategories[index];
 		int selectedIndex=selectedCategoriesIndices[index];
-		if(!REUSE_QUESTIONS)
+		if(!REUSE_CATEGORIES)
 			gameState.removeCategory(selectedIndex);
-		gameState.beginNewRound(selected);
+		gameState.beginNewRound(selected, getRemainingQuestionsList(selected));
 		showQuestion();
 	}
 
@@ -171,7 +190,7 @@ public class QuizController implements ControllerCallback{
 	@Override
 	public void roundOverviewDismissed() {
 		expectState(State.SHOWING_ROUND_OVERVIEW);
-		if(gameState.getRounds().size()<TOTAL_ROUNDS){
+		if(gameState.getRounds().size()<PersistentState.settings.getRounds()){
 			controllerState=State.SELECTING_CATEGORY;
 			gameState.selectRandomCategories(selectedCategoriesIndices);
 			for(int i=0; i<SIMULTANEOUS_CATEGORIES; ++i)
@@ -234,7 +253,7 @@ public class QuizController implements ControllerCallback{
 		int tac2=currentRound.getTeamAnswerCount(false);
 		assert(tac1==tac2);
 		int tac=tac1;
-		if(tac>=QESTIONS_PER_ROUND_PER_TEAM){
+		if(tac>=PersistentState.settings.getQuestionsPerRound()){
 			endRound();
 		}else{
 			showQuestion();
@@ -243,8 +262,9 @@ public class QuizController implements ControllerCallback{
 
 	private void endRound() {
 		expectState(State.SHOWING_SOLUTION);
-		if(gameState.getRounds().size()>=TOTAL_ROUNDS){
-			String location=PersistentState.settings.getLocation();
+		Settings s = PersistentState.settings;
+		if(gameState.getRounds().size()>=s.getRounds()){
+			String location=s.getLocation();
 			controllerState=State.SHOWING_WINNER;
 			int team1Points=gameState.getTeamPoints(true);
 			int team2Points=gameState.getTeamPoints(false);
@@ -253,12 +273,12 @@ public class QuizController implements ControllerCallback{
 
 			ui.showWinner(
 					gameState, 
-					TOTAL_ROUNDS, 
-					QESTIONS_PER_ROUND_PER_TEAM
+					s.getRounds(), 
+					s.getQuestionsPerRound()
 					);
 		}else{
 			controllerState=State.SHOWING_ROUND_OVERVIEW;
-			ui.showRoundOverview(gameState, TOTAL_ROUNDS, QESTIONS_PER_ROUND_PER_TEAM);
+			ui.showRoundOverview(gameState, s.getRounds(), s.getQuestionsPerRound());
 		}
 
 	}

@@ -1,7 +1,6 @@
 package util;
 
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
 import json.DataFormatException;
 import json.parser.PosBuffer;
 
@@ -19,14 +18,15 @@ public class Colors {
 
 	public final static Color TEAM1 = Color.rgb(203, 147, 0);
 
-	public final static Color Team2 = Color.rgb(121, 105, 98);
+	public final static Color TEAM2 = Color.rgb(121, 105, 98);
 
     public static Color getReadable(final Color color) {
-		double r = color.getRed() > 0.5 ? 0 : 1;
-		double g = color.getGreen() > 0.5 ? 0 : 1;
-		double b = color.getBlue() > 0.5 ? 0 : 1;
+		double r = color.getRed() ;
+		double g = color.getGreen();
+		double b = color.getBlue();
 
-		return Color.color(r, g, b);
+		double luminance=0.299*r + 0.587*g + 0.114*b;
+		return luminance>=.5?Color.BLACK:Color.WHITE;
 	}
 
 	public static Color getRandom() {
@@ -34,15 +34,11 @@ public class Colors {
 	}
 
 	public static Color team(boolean first) {
-		return first ? TEAM1 : Team2;
+		return first ? TEAM1 : TEAM2;
 	}
 
     public static java.awt.Color getReadable(final java.awt.Color color) {
-		int r = color.getRed() > 0x7F ? 0 : 0xFF;
-		int g = color.getGreen() > 0x7F ? 0 : 0xFF;
-		int b = color.getBlue() > 0x7F ? 0 : 0xFF;
-
-		return new java.awt.Color(r, g, b);
+		return toAwt(getReadable(toFx(color)));
 	}
     public static java.awt.Color toAwt(Color c){
     	return new java.awt.Color((float)c.getRed(), (float)c.getGreen(), (float)c.getBlue(), (float)c.getOpacity());

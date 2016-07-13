@@ -113,6 +113,6 @@ public class Category implements Weighted, JSOEncodable{
 
 	@Override
 	public String toString() {
-		return title;
+		return title.length()==0?" ":title;
 	}
 }

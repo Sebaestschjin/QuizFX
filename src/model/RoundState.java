@@ -8,14 +8,21 @@ import util.Util;
 
 public class RoundState {
 	Category category;
-	ArrayList<Question> remainingQuestions;
+	List<Question> remainingQuestions;
+	List<Question> askedQuestions=new ArrayList<>();
 	List<Boolean> team1Results;
 	List<Boolean> team2Results;
 	int number;
-	public RoundState(int number, Category cat){
+	/**
+	 * 
+	 * @param number
+	 * @param cat
+	 * @param remainingQuestions This list is mutated if a Question is removed with {@link #removeQuestion(int)}
+	 */
+	public RoundState(int number, Category cat, List<Question> remainingQuestions){
 		category=cat;
-		this.number=number;
-		remainingQuestions=new ArrayList<>(cat.getQuestions());
+		this.number=number;    
+		this.remainingQuestions=remainingQuestions;
 		team1Results=new ArrayList<>();
 		team2Results=new ArrayList<>();
 	}
@@ -36,7 +43,12 @@ public class RoundState {
 		return remainingQuestions.get(index);
 	}
 	public void removeQuestion(int index){
+		askedQuestions.add(remainingQuestions.get(index));
 		remainingQuestions.remove(index);
+		if(remainingQuestions.isEmpty()){
+			remainingQuestions.addAll(category.getQuestions());
+			remainingQuestions.removeAll(askedQuestions);
+		}
 	}
 	
 	public Boolean getTeamResults(boolean team1, int index){

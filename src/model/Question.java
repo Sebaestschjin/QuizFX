@@ -153,6 +153,6 @@ public class Question implements Weighted, JSOEncodable{
 	}
 	@Override
 	public String toString() {
-		return questionText;
+		return questionText.length()==0?" ":questionText;
 	}
 }

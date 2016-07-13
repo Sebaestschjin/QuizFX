@@ -27,8 +27,10 @@ public class GameState {
 	public RoundState getCurrentRound(){
 		return rounds.get(rounds.size()-1);
 	}
-	public void beginNewRound(Category cat){
-		rounds.add(new RoundState(rounds.size(), cat));
+	public void beginNewRound(Category cat, List<Question> remainingQuestions){
+		RoundState rs;
+		rs = new RoundState(rounds.size(), cat, remainingQuestions);
+		rounds.add(rs);
 	}
 	public void selectRandomCategories(int[] outIndices){
 		List<Category> cats=new ArrayList<>(remainingCategories);

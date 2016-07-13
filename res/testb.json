@@ -1,76 +1,174 @@
 [
-  {
-    "name":"Religion und so",
-    "bild":null,
-    "farbe":"200/0/200",
-    "fragen":[
-      {
-        "fragetext":"Wie heißt das weibliche Gegenstück zum Phallus auf Sanskrit?",
-        "fragebild":"spargel.jpg",
-        "antworten" : [
-           "Yoni",
-           "Roff",
-           "Besa",
-           "Kiki"
-        ],
-        "antworttext":"<html><i>Yoni</i> (wörtlich: Ursprung) ist der tantrische Begriff für die weiblichen Genitalien",
-        "antwortbild":null,
-        "antwortquelle":"Wikipedia"
-      },
-      {
-        "fragetext":"Noch eine Frage",
-        "fragebild":null,
-        "antworten":[
-          "richtige Antwort",
-          "falsche Antwort",
-          "falsche Antwort",
-          "falsche Antwort"
-        ],
-        "antworttext":"Ich glaube, das wusstest du",
-        "antwortbild":null,
-        "antwortquelle":"Trivial",
-        "gewicht":2
-      }
-    ]
-  },
-  {
-    "name":"Kategorie 2",
-    "bild":null,
-    "farbe":"0000ff",
-    "fragen":[
-    {
-        "fragetext":"?",
-        "fragebild":null,
-        "antworten":[
-          "1",
-          "2",
-          "3",
-          "4"
-        ],
-        "antworttext":"1 war richtig",
-        "antwortbild":null,
-        "antwortquelle":"",
-        "gewicht":2
-      }]
-  },
-  {
-    "name":"Kategorie 3",
-    "bild":null,
-    "farbe":"00aa00",
-    "fragen":[
-    {
-        "fragetext":"?",
-        "fragebild":null,
-        "antworten":[
-          "1",
-          "2",
-          "3",
-          "4"
-        ],
-        "antworttext":"1 war richtig",
-        "antwortbild":null,
-        "antwortquelle":"",
-        "gewicht":2
-      }]
-  }
+	{
+		"bild":  null ,
+		"farbe": "200/0/200",
+		"gewicht":  1.0 ,
+		"name": "Religion und so",
+		"fragen": [
+			{
+				"antwortbild":  null ,
+				"fragebild": "spargel.jpg",
+				"gewicht":  1.0 ,
+				"antworttext": "<html><i>Yoni</i> (wörtlich: Ursprung) ist der tantrische Begriff für die weiblichen Genitalien",
+				"antwortquulle":  null ,
+				"antworten": [
+					"Yoni",
+					"Roff",
+					"Besa",
+					"Kiki"
+				],
+				"fragetext": "Wie heißt das weibliche Gegenstück zum Phallus auf Sanskrit?"
+			},
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  2.0 ,
+				"antworttext": "Ich glaube, das wusstest du",
+				"antwortquulle":  null ,
+				"antworten": [
+					"richtige Antwort",
+					"falsche Antwort",
+					"falsche Antwort",
+					"falsche Antwort"
+				],
+				"fragetext": "Noch eine Frage"
+			},
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  2.0 ,
+				"antworttext": "Ich glaube, das wusstest du 3",
+				"antwortquulle":  null ,
+				"antworten": [
+					"richtige Antwort",
+					"falsche Antwort",
+					"falsche Antwort",
+					"falsche Antwort"
+				],
+				"fragetext": "Dritte Frage"
+			},
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  2.0 ,
+				"antworttext": "Ich glaube, das wusstest du 4",
+				"antwortquulle":  null ,
+				"antworten": [
+					"richtige Antwort",
+					"falsche Antwort",
+					"falsche Antwort",
+					"falsche Antwort"
+				],
+				"fragetext": "Vierte Frage"
+			},
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  2.0 ,
+				"antworttext": "Ich glaube, das wusstest du 5",
+				"antwortquulle":  null ,
+				"antworten": [
+					"richtige Antwort",
+					"falsche Antwort",
+					"falsche Antwort",
+					"falsche Antwort"
+				],
+				"fragetext": "Fünfte Frage"
+			},
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  2.0 ,
+				"antworttext": "Ich glaube, das wusstest du 6",
+				"antwortquulle":  null ,
+				"antworten": [
+					"richtige Antwort",
+					"falsche Antwort",
+					"falsche Antwort",
+					"falsche Antwort"
+				],
+				"fragetext": "Sechste Frage"
+			},
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  2.0 ,
+				"antworttext": "Ich glaube, das wusstest du 7",
+				"antwortquulle":  null ,
+				"antworten": [
+					"richtige Antwort",
+					"falsche Antwort",
+					"falsche Antwort",
+					"falsche Antwort"
+				],
+				"fragetext": "Siebte Frage"
+			}
+		]
+	},
+	{
+		"bild":  null ,
+		"farbe": "0/0/255",
+		"gewicht":  1.0 ,
+		"name": "Kategorie 2",
+		"fragen": [
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  2.0 ,
+				"antworttext": "1 war richtig",
+				"antwortquulle":  null ,
+				"antworten": [
+					"1",
+					"2",
+					"3",
+					"4"
+				],
+				"fragetext": "?"
+			}
+		]
+	},
+	{
+		"bild":  null ,
+		"farbe": "0/170/0",
+		"gewicht":  1.0 ,
+		"name": "Kategorie 3",
+		"fragen": [
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  2.0 ,
+				"antworttext": "1 war richtig",
+				"antwortquulle":  null ,
+				"antworten": [
+					"1",
+					"2",
+					"3",
+					"4"
+				],
+				"fragetext": "?"
+			}
+		]
+	},
+	{
+		"bild":  null ,
+		"farbe": "255/255/255",
+		"gewicht":  1.0 ,
+		"name": "Dummy",
+		"fragen": [
+			{
+				"antwortbild":  null ,
+				"fragebild":  null ,
+				"gewicht":  1.0 ,
+				"antworttext": "",
+				"antwortquulle":  null ,
+				"antworten": [
+					"",
+					"",
+					"",
+					""
+				],
+				"fragetext": "?"
+			}
+		]
+	}
 ]
