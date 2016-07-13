@@ -37,6 +37,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 import javax.swing.event.DocumentEvent;
@@ -144,6 +145,7 @@ public class Editor extends JFrame implements ClipboardOwner{
 		edButtons.add(delQ); edButtons.add(pasteQ);
 		lb.add(edButtons);
 		qTab.setLeftComponent(lp);
+		questionList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 		Box eb=Box.createVerticalBox();
 		JPanel ep=new JPanel(new SpringLayout());
@@ -201,9 +203,10 @@ public class Editor extends JFrame implements ClipboardOwner{
 		for(int i=0; i<answers.length; ++i)
 			answers[i].setEnabled(false);
 		questionList.addListSelectionListener(lse -> {
-			boolean sel=questionList.getSelectedIndex()!=-1;
+			int selCount = questionList.getSelectedValuesList().size();
+			boolean sel=selCount==1;
 			delQ.setEnabled(sel);
-			copyQ.setEnabled(sel);
+			copyQ.setEnabled(selCount>0);
 			qText.setEnabled(sel);
 			qImgB.setEnabled(sel);
 			qImgT.setEnabled(sel);
