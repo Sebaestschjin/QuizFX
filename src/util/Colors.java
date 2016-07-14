@@ -44,8 +44,8 @@ public class Colors {
     	return new java.awt.Color((float)c.getRed(), (float)c.getGreen(), (float)c.getBlue(), (float)c.getOpacity());
     }
     public static Color toFx(java.awt.Color c){
-    	float factor=1.0f/0xFF;
-    	return new Color(c.getRed()*factor, c.getGreen()*factor, c.getBlue()*factor, c.getAlpha()*factor);
+    	double factor=1.0/0xFF;
+    	return Color.rgb(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()*factor);
     }
     public static String toString(Color c){
     	return toString(toAwt(c));
@@ -63,8 +63,7 @@ public class Colors {
 				int b = Integer.parseInt(s.substring(lastSlash+1));
 				if(r<0 || g<0 || b<0 || r>0xFF || g>0xFF || b>0xFF)
 					throw new DataFormatException("invalid color string: Number out of range", pos);
-				double factor=1.0/0xFF;
-				Color color = new Color(r*factor, g*factor, b*factor, 1);
+				Color color = Color.rgb(r, g, b);
 				return color;
 			}catch(NumberFormatException x){
 				throw new DataFormatException("invalid color string", pos);
@@ -75,8 +74,7 @@ public class Colors {
 			int r = Integer.parseInt(s.substring(0, 2), 16);
 			int g = Integer.parseInt(s.substring(2, 4), 16);
 			int b = Integer.parseInt(s.substring(4, 6), 16);
-			double factor=1.0/0xFF;
-			Color color = new Color(r*factor, g*factor, b*factor, 1);
+			Color color = Color.rgb(r, g, b);
 			return color;
 
 		}
