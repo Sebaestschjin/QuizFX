@@ -132,8 +132,8 @@ public class Editor extends JFrame implements ClipboardOwner{
 		lp.add(lb, BorderLayout.SOUTH);
 		JButton addQ=new JButton("Neue Frage");
 		JButton delQ=new JButton("Frage löschen");
-		JButton copyQ=new JButton("Frage kopieren");
-		JButton pasteQ=new JButton("Frage einfügen");
+		JButton copyQ=new JButton("Fragen kopieren");
+		JButton pasteQ=new JButton("Fragen einfügen");
 		final Runnable updatePasteQEnabled;
 		{
 			updatePasteQEnabled=
@@ -206,6 +206,7 @@ public class Editor extends JFrame implements ClipboardOwner{
 			answers[i].setEnabled(false);
 		questionList.addListSelectionListener(lse -> {
 			int selCount = questionList.getSelectedValuesList().size();
+			copyQ.setText(selCount>1?"Fragen kopieren":"Frage kopieren");
 			boolean sel=selCount==1;
 			delQ.setEnabled(sel);
 			copyQ.setEnabled(selCount>0);
