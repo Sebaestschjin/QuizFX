@@ -11,9 +11,6 @@ import javafx.util.Duration;
 import model.*;
 import ui.screen.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Sebastian Stern
  */

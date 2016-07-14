@@ -14,11 +14,13 @@ public class Colors {
 
 	public final static Color GREEN = Color.rgb(102, 255, 0);
 
+	public final static Color CURRY = Color.rgb(203, 147, 0);
+
 	public final static Color RED = Color.rgb(255, 31, 31);
 
-	public final static Color TEAM1 = Color.rgb(203, 147, 0);
+	private final static Color TEAM1 = Color.rgb(93, 78, 111);
 
-	public final static Color TEAM2 = Color.rgb(121, 105, 98);
+	private final static Color TEAM2 = Color.rgb(121, 105, 98);
 
     public static Color getReadable(final Color color) {
 		double r = color.getRed() ;

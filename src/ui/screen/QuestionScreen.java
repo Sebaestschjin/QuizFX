@@ -5,35 +5,27 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.VPos;
+import javafx.geometry.*;
 import javafx.scene.Node;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 import model.Answer;
 import model.GameState;
 import model.Question;
 import ui.Sizer;
+import ui.control.HTMLLabel;
 import util.Colors;
 import util.Style;
 
 import java.io.File;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +37,8 @@ public class QuestionScreen extends UIScreen {
 
 	// TODO allow key-bindings to be set by user
 	private List<KeyCode> team1Keys = Arrays.asList(KeyCode.Q, KeyCode.E, KeyCode.Y, KeyCode.C);
-	private List<KeyCode> team2Keys = Arrays.asList(KeyCode.NUMPAD7, KeyCode.NUMPAD9, KeyCode.NUMPAD1, KeyCode.NUMPAD3);
+	//private List<KeyCode> team2Keys = Arrays.asList(KeyCode.NUMPAD7, KeyCode.NUMPAD9, KeyCode.NUMPAD1, KeyCode.NUMPAD3);
+	private List<KeyCode> team2Keys = Arrays.asList(KeyCode.U, KeyCode.O, KeyCode.M, KeyCode.PERIOD);
 
 	private GameState gs;
 
@@ -59,7 +52,7 @@ public class QuestionScreen extends UIScreen {
 
 	private DoubleProperty maxWidth = new SimpleDoubleProperty();
 
-	private Label questionLabel;
+	private HTMLLabel questionLabel;
 
 	private List<Region> answerNodes = new ArrayList<>();
 
@@ -137,18 +130,18 @@ public class QuestionScreen extends UIScreen {
 	}
 
 	private Node createQuestion(Question question) {
-		Pane content = new StackPane();
+		VBox content = new VBox();
+		content.setAlignment(Pos.CENTER);
 
-		questionLabel = new Label(question.getQuestionText());
-		questionLabel.setWrapText(true);
+		questionLabel = new HTMLLabel(question.getQuestionText());
 		questionLabel.setTextAlignment(TextAlignment.CENTER);
 		sizer.font(questionLabel, Sizer.FONT_RATIO_GENERAL * 1.5);
 		File imageFile = question.getQuestionImageFile();
 		if (imageFile != null) {
 			try {
 				String fName = "/" + imageFile.getName();
-				questionLabel.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(fName))));
-				questionLabel.setContentDisplay(ContentDisplay.TOP);
+				//questionLabel.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(fName))));
+				//questionLabel.setContentDisplay(ContentDisplay.TOP);
 			} catch (Throwable e) {
 				System.out.println("Couldn't load image " + imageFile.getName());
 			}
@@ -156,7 +149,7 @@ public class QuestionScreen extends UIScreen {
 
 		content.getChildren().add(questionLabel);
 		content.getStyleClass().add("question");
-		setBackground(content, Colors.PETROL);
+		setBackground(content, Colors.CURRY);
 		questionLabel.setTextFill(Color.WHITE);
 
 		GridPane.setColumnSpan(content, 2);
@@ -165,13 +158,13 @@ public class QuestionScreen extends UIScreen {
 	}
 
 	private Region createAnswer(final int index) {
-		Pane content = new StackPane();
+		VBox content = new VBox();
+		content.setAlignment(Pos.CENTER);
 
 		Answer answer = answers[index];
-		Label answerLabel = new Label(answer.getText());
+		HTMLLabel answerLabel = new HTMLLabel(answer.getText());
 		answerLabel.setTextFill(Color.WHITE);
 		answerLabel.setTextAlignment(TextAlignment.CENTER);
-		answerLabel.setWrapText(true);
 		sizer.font(answerLabel);
 
 		setBackground(content, Colors.PETROL);
@@ -217,6 +210,7 @@ public class QuestionScreen extends UIScreen {
 		progressBar = new ProgressBar();
 		progressBar.prefWidthProperty().bind(pane.widthProperty());
 		progressBar.prefHeightProperty().bind(pane.heightProperty().divide(2));
+		setBackground(progressBar, Colors.PETROL);
 		pane.getChildren().add(progressBar);
 
 		GridPane.setColumnSpan(pane, 2);

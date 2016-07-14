@@ -42,14 +42,12 @@ public class AnswerScreen extends UIScreen {
 
 		//
 		HTMLLabel answer = new HTMLLabel(question.getAnswerText());
-		answer.setWrapText(true);
 		answer.setTextAlignment(TextAlignment.CENTER);
 		sizer.font(answer);
 
 		//
 		if (question.getAnswerSource() != null && question.getAnswerSource().isEmpty()) {
 			HTMLLabel source = new HTMLLabel(question.getAnswerSource());
-			source.setWrapText(true);
 			source.setTextAlignment(TextAlignment.CENTER);
 		}
 

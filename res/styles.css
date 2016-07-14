@@ -1,0 +1,26 @@
+.root {
+
+}
+
+.question {
+    -fx-border-color: black;
+    -fx-border-radius: 10 10 10 10;
+    -fx-border-insets: 0, 0 1 1 0;
+}
+
+.answer {
+    -fx-border-color: black;
+    -fx-border-radius: 10 10 10 10;
+    -fx-border-insets: 0, 0 1 1 0;
+}
+
+.title {
+    -fx-font-family: 'Signika';
+    -fx-font-weight: bold;
+}
+
+.empty-team {
+    -fx-border-color: black;
+    -fx-border-radius: 10 10 10 10;
+    -fx-border-insets: 0, 0 1 1 0;
+}

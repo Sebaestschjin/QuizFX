@@ -1,15 +1,128 @@
 package ui.control;
 
-import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.util.Pair;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Sebastian Stern
  */
-public class HTMLLabel extends Label {
+public class HTMLLabel extends TextFlow {
 
-	// TODO implement
+	private enum Style {
+		REGULAR(""),
+		BOLD("b"),
+		ITALIC("i"),
+		STRIKE("s"),
+		UNDERLINE("u"),
+		;
+
+		String tag;
+
+		Style(String tag) {
+			this.tag = tag;
+		}
+	}
+
+	private List<Pair<String, List<Style>>> splittedText = new ArrayList<>();
+
+	private List<Text> texts = new ArrayList<>();
+
+	private Text properties = new Text();
+
 	public HTMLLabel(String content) {
-		super(content);
+		setText(content);
+	}
+
+	public void setText(String content) {
+		getChildren().clear();
+		texts.clear();
+		splittedText.clear();
+
+		// replace HTML and br tags
+		content = content.replaceAll("</?[Hh][Tt][Mm][Ll]>", "");
+		content = content.replaceAll("</?[bB][rR]>", "\n");
+
+		// replace style tags
+		splitText(content);
+
+		addTexts();
+	}
+
+	private void splitText(String content) {
+		splittedText.add(new Pair<>(content, Arrays.asList(Style.REGULAR)));
+		for (Style s : Style.values()) {
+			if (s == Style.REGULAR) {
+				continue;
+			}
+			doSplit(s);
+		}
+	}
+
+	private void doSplit(Style style) {
+		List<Pair<String, List<Style>>> newSplits = new ArrayList<>();
+
+		for (Pair<String, List<Style>> split : splittedText) {
+			String tag = style.tag + style.tag.toUpperCase();
+			String text = split.getKey();
+			List<Style> curStyles = split.getValue();
+			List<Style> newStyles = new ArrayList(curStyles);
+			newStyles.add(style);
+
+			Pattern p = Pattern.compile("<[" + tag + "]\\b[^>]*>(.*?)</[" + tag + "]>");
+			Matcher m = p.matcher(text);
+
+			int last = 0;
+			while (m.find()) {
+				newSplits.add(new Pair<>(text.substring(last, m.start()), curStyles));
+				newSplits.add(new Pair<>(m.group(1), newStyles));
+				last = m.end();
+			}
+
+			newSplits.add(new Pair<>(text.substring(last), curStyles));
+		}
+
+		splittedText = newSplits;
+	}
+
+	private void addTexts() {
+		for (Pair<String, List<Style>> text : splittedText) {
+			Text t = new Text(text.getKey());
+			addText(t);
+
+			if (text.getValue().contains(Style.BOLD)) {
+				t.setStyle("-fx-font-weight: bold;");
+			}
+			if (text.getValue().contains(Style.ITALIC)) {
+				t.setStyle("-fx-font-style: italic;");
+			}
+			if (text.getValue().contains(Style.UNDERLINE)) {
+				t.setUnderline(true);
+			}
+			if (text.getValue().contains(Style.STRIKE)) {
+				t.setStrikethrough(true);
+			}
+		}
+	}
+
+	private void addText(Text t) {
+		t.setFill(properties.getFill());
+		getChildren().add(t);
+		texts.add(t);
+	}
+
+	public void setTextFill(Color color) {
+		properties.setFill(color);
+		for (Text text : texts) {
+			text.setFill(color);
+		}
 	}
 
 }
