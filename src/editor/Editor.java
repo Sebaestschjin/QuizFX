@@ -134,9 +134,12 @@ public class Editor extends JFrame implements ClipboardOwner{
 		JButton delQ=new JButton("Frage löschen");
 		JButton copyQ=new JButton("Frage kopieren");
 		JButton pasteQ=new JButton("Frage einfügen");
-		final Runnable updatePasteQEnabled=
-				()->pasteQ.setEnabled(Toolkit.getDefaultToolkit().getSystemClipboard().
-						isDataFlavorAvailable(questionsFlavor));
+		final Runnable updatePasteQEnabled;
+		{
+			updatePasteQEnabled=
+					()->pasteQ.setEnabled(Toolkit.getDefaultToolkit().getSystemClipboard().
+							isDataFlavorAvailable(questionsFlavor));
+		}
 		updatePasteQEnabled.run();
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(fe->updatePasteQEnabled.run());
 		JPanel edButtons=new JPanel(new GridLayout(2,2));
@@ -217,18 +220,20 @@ public class Editor extends JFrame implements ClipboardOwner{
 			for(int i=0; i<answers.length; ++i)
 				answers[i].setEnabled(sel);
 			if(sel){
-				currentQuestion=questionList.getSelectedValue();
-				qText.setText(currentQuestion.getQuestionText());
-				aText.setText(currentQuestion.getAnswerText());
-				sText.setText(currentQuestion.getAnswerSource());
-				weight.setValue(currentQuestion.getWeight());
-				File qFile = currentQuestion.getQuestionImageFile();
+				currentQuestion=null;
+				Question cq=questionList.getSelectedValue();
+				qText.setText(cq.getQuestionText());
+				aText.setText(cq.getAnswerText());
+				sText.setText(cq.getAnswerSource());
+				weight.setValue(cq.getWeight());
+				File qFile = cq.getQuestionImageFile();
 				qImgT.setText(qFile==null?"":qFile.getPath());
-				File aFile = currentQuestion.getAnswerImageFile();
+				File aFile = cq.getAnswerImageFile();
 				aImgT.setText(aFile==null?"":aFile.getPath());
-				List<Answer> aList = currentQuestion.getAnswers();
+				List<Answer> aList = cq.getAnswers();
 				for(int i=0; i<answers.length; ++i)
-					answers[i].setText(aList.get(i).getText());	
+					answers[i].setText(aList.get(i).getText());
+				currentQuestion=cq;
 			}else{
 				currentQuestion=null;
 				qText.setText("");
@@ -278,22 +283,22 @@ public class Editor extends JFrame implements ClipboardOwner{
 		qText.getDocument().addDocumentListener(new DocumentAdapter() {
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				if(currentQuestion!=null)
-					updateCurrentQuestion(currentQuestion.withQuestionText(qText.getText()));
+				if(currentQuestion==null) return;
+				updateCurrentQuestion(currentQuestion.withQuestionText(qText.getText()));
 			}
 		});
 		aText.getDocument().addDocumentListener(new DocumentAdapter() {
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				if(currentQuestion!=null)
-					updateCurrentQuestion(currentQuestion.withAnswerText(aText.getText()));
+				if(currentQuestion==null) return;
+				updateCurrentQuestion(currentQuestion.withAnswerText(aText.getText()));
 			}
 		});
 		sText.getDocument().addDocumentListener(new DocumentAdapter() {
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				if(currentQuestion!=null)
-					updateCurrentQuestion(currentQuestion.withAnswerSource(sText.getText()));
+				if(currentQuestion==null) return;
+				updateCurrentQuestion(currentQuestion.withAnswerSource(sText.getText()));
 			}
 		});
 
@@ -369,6 +374,7 @@ public class Editor extends JFrame implements ClipboardOwner{
 		for(int i=0; i<answers.length; ++i)
 			answers[i].getDocument().addDocumentListener(answerListener);
 	}
+
 	private List<Question> getClipboardContent() {
 		String str;
 		try {
@@ -488,18 +494,21 @@ public class Editor extends JFrame implements ClipboardOwner{
 			colorT.setEnabled(sel);
 			tabs.setEnabledAt(2, sel);
 			if(sel){
-				currentCategory=loadedCategories.getSelectedValue();
-				title.setText(currentCategory.getTitle());
-				weight.setValue(currentCategory.getWeight());
-				File file = currentCategory.getImageFile();
+				currentCategory=null;
+				currentQuestion=null;
+				Category cc=loadedCategories.getSelectedValue();
+				title.setText(cc.getTitle());
+				weight.setValue(cc.getWeight());
+				File file = cc.getImageFile();
 				catImgT.setText(file==null?"":file.getPath());
-				colorT.setText(Colors.toString(currentCategory.getColor()));
+				colorT.setText(Colors.toString(cc.getColor()));
 				DefaultListModel<Question> qm = questionListModel();
 				qm.removeAllElements();
-				for(Question q: currentCategory.getQuestions()){
+				for(Question q: cc.getQuestions()){
 					qm.addElement(q);
 					questionList.setSelectedIndex(0);
 				}
+				currentCategory=cc;
 			}else{
 				currentCategory=null;
 				title.setText("");
@@ -606,8 +615,6 @@ public class Editor extends JFrame implements ClipboardOwner{
 		ArrayList<Question> qs=new ArrayList<>(currentCategory.getQuestions());
 		qs.set(i, q);
 		updateCurrentCategegory(currentCategory.withQuestions(qs));
-
-		changed=true;
 	}
 
 	private void updateCurrentCategegory(Category c) {
@@ -640,9 +647,11 @@ public class Editor extends JFrame implements ClipboardOwner{
 		opened=null;
 		clearData();
 		changed=false;
+
 	}
 	private void clearData() {
 		categoryListModel().removeAllElements();
+		changed=true;
 	}
 	private DefaultListModel<Category> categoryListModel() {
 		return (DefaultListModel<Category>)loadedCategories.getModel();
