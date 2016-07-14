@@ -73,8 +73,16 @@ public abstract class UIScreen {
 		return prop;
 	}
 
-	public void setBackground(Region region, Color color) {
-		region.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
+	protected void setBackground(Region region, Color color) {
+		setBackground(region, color, new CornerRadii(10));
+	}
+
+	protected void setBackground(Region region, Color color, CornerRadii corner) {
+		setBackground(region, color, corner, Insets.EMPTY);
+	}
+
+	protected void setBackground(Region region, Color color, CornerRadii corner, Insets insets) {
+		region.setBackground(new Background(new BackgroundFill(color, corner, insets)));
 	}
 
 }

@@ -24,3 +24,15 @@
     -fx-border-radius: 10 10 10 10;
     -fx-border-insets: 0, 0 1 1 0;
 }
+
+.team1 {
+    -fx-border-color: black;
+    -fx-border-radius: 10 10 10 10;
+    -fx-border-insets: 0, 0 1 1 0;
+}
+
+.team2 {
+    -fx-border-color: black;
+    -fx-border-radius: 10 10 10 10;
+    -fx-border-insets: 0, 0 1 1 0;
+}

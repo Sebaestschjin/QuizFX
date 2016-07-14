@@ -187,7 +187,7 @@ public class QuestionScreen extends UIScreen {
 		teamLabel.setTextFill(Color.WHITE);
 
 		GridPane.setHalignment(teamLabel, HPos.RIGHT);
-		sizer.font(teamLabel, Sizer.FONT_RATIO_GENERAL / 2);
+		sizer.font(teamLabel, Sizer.FONT_RATIO_GENERAL * 0.7);
 		content.getStyleClass().add(Style.EMPTY_TEAM);
 		content.maxHeightProperty().bind(answerNodes.get(0).heightProperty().multiply(0.15));
 		// specific settings per team
@@ -259,7 +259,7 @@ public class QuestionScreen extends UIScreen {
 	}
 
 	private void giveAnswer(int team){
-		teamNodes.get(team).setBackground(new Background(new BackgroundFill(Colors.team(team == 0), new CornerRadii(10), Insets.EMPTY)));
+		setBackground(teamNodes.get(team), Colors.team(team == 0));
 	}
 
 	private void moveLabel(int team, int answer) {

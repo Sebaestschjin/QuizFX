@@ -20,7 +20,7 @@ public class Colors {
 
 	private final static Color TEAM1 = Color.rgb(93, 78, 111);
 
-	private final static Color TEAM2 = Color.rgb(121, 105, 98);
+	private final static Color TEAM2 = Color.rgb(97, 106, 41);
 
     public static Color getReadable(final Color color) {
 		double r = color.getRed() ;

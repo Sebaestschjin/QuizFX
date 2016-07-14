@@ -1,5 +1,7 @@
 package ui.screen;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import model.GameState;
 import ui.Sizer;
 import util.Colors;
@@ -26,6 +30,8 @@ public class RoundOverviewScreen extends UIScreen {
 	private int totalCols;
 	private boolean handleAsWinnerScreen;
 
+	private DoubleProperty maxWidth = new SimpleDoubleProperty();
+
 	public RoundOverviewScreen(GameState gameState, int totalRounds, int questionsPerRound) {
 		this.gameState = gameState;
 		this.totalRounds = totalRounds;
@@ -38,6 +44,10 @@ public class RoundOverviewScreen extends UIScreen {
 
 	@Override
 	protected Node createUI() {
+		maxWidth.bind(scene.widthProperty().subtract(scene.widthProperty().divide(Sizer.BG_RATIO - 1)));
+
+		BorderPane p = new BorderPane();
+
 		GridPane layout = createLayout();
 
 		// team labels
@@ -68,7 +78,8 @@ public class RoundOverviewScreen extends UIScreen {
 		sizer.width(next, 0.2);
 		layout.getChildren().add(next);
 
-		return layout;
+		p.setLeft(layout);
+		return p;
 	}
 
 
@@ -83,13 +94,21 @@ public class RoundOverviewScreen extends UIScreen {
 		GridPane layout = new GridPane();
 		layout.setHgap(15);
 		layout.setVgap(15);
-		layout.setAlignment(Pos.CENTER);
+		layout.setPadding(new Insets(20, 0, 20, 20));
 
 		for (int col = 0; col < totalCols; col++) {
 			ColumnConstraints columnConstraint = new ColumnConstraints();
-			columnConstraint.prefWidthProperty().bind(getScreenWidthProperty(1.0/(totalCols + 2)));
+
+			if (col == questionsPerRound)
+				columnConstraint.prefWidthProperty().bind(maxWidth.divide(totalCols).multiply(2));
+			else
+				columnConstraint.prefWidthProperty().bind(maxWidth.divide(totalCols));
+
 			layout.getColumnConstraints().add(columnConstraint);
 		}
+
+		layout.prefWidthProperty().bind(maxWidth);
+		layout.setAlignment(Pos.CENTER);
 
 		return layout;
 	}
@@ -98,18 +117,23 @@ public class RoundOverviewScreen extends UIScreen {
 		boolean team1 = team == 0;
 
 		Label teamName = new Label(gameState.getTeam(team1).getName());
-
 		sizer.font(teamName);
-		GridPane.setConstraints(teamName, team1 ? 0 : questionsPerRound + 2, 0);
-		GridPane.setHalignment(teamName, team1 ? HPos.LEFT : HPos.RIGHT);
-		GridPane.setColumnSpan(teamName, 2);
+
+		StackPane pane = new StackPane();
+		pane.setPadding(new Insets(10));
+		GridPane.setConstraints(pane, team1 ? 0 : questionsPerRound + 2, 0);
+		pane.setAlignment(team1 ? Pos.CENTER_LEFT : Pos.CENTER_RIGHT);
+		GridPane.setColumnSpan(pane, questionsPerRound - 1);
+		setBackground(pane, Colors.team(team == 0), new CornerRadii(10));
+		pane.getChildren().addAll(teamName);
 
 		Label teamScore = new Label("" + gameState.getTeamPoints(team1));
 		sizer.font(teamScore, Sizer.FONT_RATIO_GENERAL * 1.60);
 		GridPane.setHalignment(teamScore, team1 ? HPos.RIGHT : HPos.LEFT);
 		GridPane.setConstraints(teamScore, team1 ? questionsPerRound - 1 : questionsPerRound + 1, 0);
 
-		parent.getChildren().addAll(teamName, teamScore);
+
+		parent.getChildren().addAll(pane, teamScore);
 	}
 
 	private void createRound(int round, Pane parent) {
@@ -123,9 +147,11 @@ public class RoundOverviewScreen extends UIScreen {
 
 	private void createCategory(int round, Pane parent) {
 		if (gameState.getRounds().size() > round) {
-			Label category = new Label(gameState.getRounds().get(round).getCategory().getTitle());
-			category.setWrapText(true);
-			sizer.font(category);
+			String title = gameState.getRounds().get(round).getCategory().getTitle();
+			TextFlow category = new TextFlow();
+			category.setTextAlignment(TextAlignment.CENTER);
+			category.getChildren().add(new javafx.scene.text.Text(title));
+			sizer.font(category, Sizer.FONT_RATIO_GENERAL * 0.7);
 			GridPane.setConstraints(category, questionsPerRound, round + 1);
 			parent.getChildren().add(category);
 		}
@@ -146,7 +172,7 @@ public class RoundOverviewScreen extends UIScreen {
 						Colors.GREEN : Colors.RED;
 			}
 
-			box.setBackground(new Background(new BackgroundFill(color, CornerRadii.EMPTY, Insets.EMPTY)));
+			box.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
 			sizer.size(box, 0.1);
 
 			GridPane.setConstraints(box, question + gap,  round + 1);

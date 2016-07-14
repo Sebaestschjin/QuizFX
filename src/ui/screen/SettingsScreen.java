@@ -32,7 +32,7 @@ public class SettingsScreen extends UIScreen {
 		add(pane, Text.LOCATION, location);
 
 		// rounds
-		Spinner<Integer> rounds = new Spinner<>(3, 10, settings.getRounds());
+		Spinner<Integer> rounds = new Spinner<>(3, 8, settings.getRounds());
 		add(pane, Text.ROUNDS, rounds);
 
 		// questions per round
