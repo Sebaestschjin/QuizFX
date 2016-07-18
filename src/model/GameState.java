@@ -54,6 +54,7 @@ public class GameState {
 	public Category getCategory(int index){
 		return remainingCategories.get(index);
 	}
+	public int getCategoryCount() { return remainingCategories.size(); }
 	public int getTeamPoints(boolean team1) {
 		int ret=0;
 		for(RoundState rs: rounds)

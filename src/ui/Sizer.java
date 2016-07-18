@@ -12,7 +12,7 @@ import ui.screen.UIScreen;
  */
 public class Sizer {
 
-	public final static double FONT_RATIO_GENERAL = 0.015;
+	public final static double FONT_RATIO_GENERAL = 0.013;
 
 	public final static double BUTTON_WIDTH_GENERAL = 0.4;
 

@@ -20,12 +20,12 @@ import javafx.util.Duration;
 import model.Answer;
 import model.GameState;
 import model.Question;
+import ui.JavaFXUI;
 import ui.Sizer;
 import ui.control.HTMLLabel;
 import util.Colors;
 import util.Style;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +52,10 @@ public class QuestionScreen extends UIScreen {
 
 	private DoubleProperty maxWidth = new SimpleDoubleProperty();
 
+	private DoubleProperty questionHeight = new SimpleDoubleProperty();
+
+	private DoubleProperty answerHeight = new SimpleDoubleProperty();
+
 	private HTMLLabel questionLabel;
 
 	private List<Region> answerNodes = new ArrayList<>();
@@ -67,6 +71,8 @@ public class QuestionScreen extends UIScreen {
 	@Override
 	protected Node createUI() {
 		maxWidth.bind(scene.widthProperty().subtract(scene.widthProperty().divide(Sizer.BG_RATIO - 1)));
+		questionHeight.bind(scene.heightProperty().multiply(0.4));
+		answerHeight.bind(scene.heightProperty().multiply(0.28));
 
 		// grid basic layout
 		GridPane grid = createGrid();
@@ -89,20 +95,23 @@ public class QuestionScreen extends UIScreen {
 		grid.add(bottom, 0, 3);
 
 		// set event-handler for inputting the teams answers
-		inputHandler = event -> giveAnswer(event.getCode());
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, inputHandler);
+		if (!JavaFXUI.DEMO_MODE) {
+			inputHandler = event -> giveAnswer(event.getCode());
+			scene.addEventHandler(KeyEvent.KEY_PRESSED, inputHandler);
+		}
 
 		return grid;
 	}
 
 	@Override
 	public void unload() {
-		scene.removeEventHandler(KeyEvent.KEY_PRESSED, inputHandler);
+		if (inputHandler != null) {
+			scene.removeEventHandler(KeyEvent.KEY_PRESSED, inputHandler);
+		}
 	}
 
 	private GridPane createGrid() {
 		GridPane pane = new GridPane();
-		//pane.setGridLinesVisible(true);
 
 		// set the width of the columns relative to the main screen width
 		ColumnConstraints col1 = new ColumnConstraints();
@@ -115,11 +124,14 @@ public class QuestionScreen extends UIScreen {
 
 		// set the height of the rows relative to the main screen height
 		RowConstraints row1 = new RowConstraints();
-		row1.percentHeightProperty().bind(scene.heightProperty().multiply(0.5));
+		row1.maxHeightProperty().bind(questionHeight);
+		row1.prefHeightProperty().bind(row1.maxHeightProperty());
 		RowConstraints row2 = new RowConstraints();
-		row2.percentHeightProperty().bind(scene.heightProperty().multiply(0.4));
+		row2.maxHeightProperty().bind(answerHeight);
+		row2.prefHeightProperty().bind(row2.maxHeightProperty());
 		RowConstraints row3 = new RowConstraints();
-		row3.percentHeightProperty().bind(scene.heightProperty().multiply(0.1));
+		row3.maxHeightProperty().bind(scene.heightProperty().multiply(0.05));
+		row3.prefHeightProperty().bind(row3.maxHeightProperty());
 		pane.getRowConstraints().addAll(row1, row2, row2, row3);
 
 		pane.setHgap(10);
@@ -135,22 +147,18 @@ public class QuestionScreen extends UIScreen {
 
 		questionLabel = new HTMLLabel(question.getQuestionText());
 		questionLabel.setTextAlignment(TextAlignment.CENTER);
+		questionLabel.setMaxHeight(questionHeight);
+		questionLabel.setImage(question.getQuestionImageFile());
 		sizer.font(questionLabel, Sizer.FONT_RATIO_GENERAL * 1.5);
-		File imageFile = question.getQuestionImageFile();
-		if (imageFile != null) {
-			try {
-				String fName = "/" + imageFile.getName();
-				//questionLabel.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(fName))));
-				//questionLabel.setContentDisplay(ContentDisplay.TOP);
-			} catch (Throwable e) {
-				System.out.println("Couldn't load image " + imageFile.getName());
-			}
-		}
 
 		content.getChildren().add(questionLabel);
 		content.getStyleClass().add("question");
 		setBackground(content, Colors.CURRY);
 		questionLabel.setTextFill(Color.WHITE);
+
+		if (JavaFXUI.DEMO_MODE) {
+			content.setOnMouseClicked(event -> showAnswer(-1, -1));
+		}
 
 		GridPane.setColumnSpan(content, 2);
 
@@ -165,6 +173,7 @@ public class QuestionScreen extends UIScreen {
 		HTMLLabel answerLabel = new HTMLLabel(answer.getText());
 		answerLabel.setTextFill(Color.WHITE);
 		answerLabel.setTextAlignment(TextAlignment.CENTER);
+		answerLabel.setMaxHeight(answerHeight);
 		sizer.font(answerLabel);
 
 		setBackground(content, Colors.PETROL);
@@ -225,11 +234,14 @@ public class QuestionScreen extends UIScreen {
 
 	public void showAnswer(int team1Answer, int team2Answer) {
 		// remove key listener
-		scene.removeEventHandler(KeyEvent.KEY_PRESSED, inputHandler);
+		if (inputHandler != null) {
+			scene.removeEventHandler(KeyEvent.KEY_PRESSED, inputHandler);
+		}
 
 		// show solution
 		questionLabel.setText(question.getAnswerText());
-		EventHandler<MouseEvent> handler = event -> controller.solutionScreenDismissed();
+		questionLabel.setImage(question.getAnswerImageFile());
+		EventHandler<MouseEvent> handler = event -> showSolution();
 		questionLabel.getParent().setOnMouseClicked(handler);
 
 		// show correct answer
@@ -243,6 +255,12 @@ public class QuestionScreen extends UIScreen {
 		// move labels to chosen answers
 		moveLabel(0, team1Answer);
 		moveLabel(1, team2Answer);
+	}
+
+	private void showSolution() {
+		if (!JavaFXUI.DEMO_MODE) {
+			controller.solutionScreenDismissed();
+		}
 	}
 
 	private void giveAnswer(KeyCode code) {
@@ -263,6 +281,9 @@ public class QuestionScreen extends UIScreen {
 	}
 
 	private void moveLabel(int team, int answer) {
+		if (answer < 0)
+			return;
+
 		final int offset = 10;
 
 		// calculate current bounds

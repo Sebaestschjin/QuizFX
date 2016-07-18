@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import model.Settings;
+import ui.JavaFXUI;
 import util.Text;
 
 /**
@@ -53,6 +54,11 @@ public class SettingsScreen extends UIScreen {
 		consume.setSelected(settings.isConsumeQuestions());
 		add(pane, Text.CONSUME, consume);
 
+		// demo mode
+		CheckBox demo = new CheckBox();
+		demo.setSelected(JavaFXUI.DEMO_MODE);
+		add(pane, Text.DEMO, demo);
+
 		// buttons
 		Button cancel = new Button(Text.CANCEL);
 		cancel.setOnMouseClicked(event ->
@@ -71,6 +77,7 @@ public class SettingsScreen extends UIScreen {
 			settings.setConsumeQuestions(consume.isSelected());
 			settings.setRounds(rounds.getValue());
 			controller.settingsScreenDismissed(settings);
+			JavaFXUI.DEMO_MODE = demo.isSelected();
 		}
 		);
 		sizer.font(save);

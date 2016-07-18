@@ -1,12 +1,23 @@
 package ui.control;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.util.Pair;
+import main.Paths;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +25,15 @@ import java.util.regex.Pattern;
 /**
  * @author Sebastian Stern
  */
-public class HTMLLabel extends TextFlow {
+public class HTMLLabel extends HBox {
+
+	private String curContent;
+
+	private ImageView imageView = new ImageView();
+
+	private TextFlow textFlow = new TextFlow();
+
+	private DoubleProperty maxHeight;
 
 	private enum Style {
 		REGULAR(""),
@@ -38,11 +57,17 @@ public class HTMLLabel extends TextFlow {
 	private Text properties = new Text();
 
 	public HTMLLabel(String content) {
+		setPadding(new Insets(10));
+		setSpacing(10);
+		setAlignment(Pos.CENTER);
 		setText(content);
+
+		getChildren().addAll(imageView, textFlow);
 	}
 
 	public void setText(String content) {
-		getChildren().clear();
+		curContent = content;
+		textFlow.getChildren().clear();
 		texts.clear();
 		splittedText.clear();
 
@@ -52,12 +77,14 @@ public class HTMLLabel extends TextFlow {
 
 		// replace style tags
 		splitText(content);
-
 		addTexts();
+
+		System.out.println(textFlow.getLayoutBounds().getHeight());
+		System.out.println(maxHeight == null ? "null" : maxHeight.getValue());
 	}
 
 	private void splitText(String content) {
-		splittedText.add(new Pair<>(content, Arrays.asList(Style.REGULAR)));
+		splittedText.add(new Pair<>(content, Collections.singletonList(Style.REGULAR)));
 		for (Style s : Style.values()) {
 			if (s == Style.REGULAR) {
 				continue;
@@ -73,7 +100,7 @@ public class HTMLLabel extends TextFlow {
 			String tag = style.tag + style.tag.toUpperCase();
 			String text = split.getKey();
 			List<Style> curStyles = split.getValue();
-			List<Style> newStyles = new ArrayList(curStyles);
+			List<Style> newStyles = new ArrayList<>(curStyles);
 			newStyles.add(style);
 
 			Pattern p = Pattern.compile("<[" + tag + "]\\b[^>]*>(.*?)</[" + tag + "]>");
@@ -114,8 +141,12 @@ public class HTMLLabel extends TextFlow {
 
 	private void addText(Text t) {
 		t.setFill(properties.getFill());
-		getChildren().add(t);
+		textFlow.getChildren().add(t);
 		texts.add(t);
+	}
+
+	public void setTextAlignment(TextAlignment alignment) {
+		textFlow.setTextAlignment(alignment);
 	}
 
 	public void setTextFill(Color color) {
@@ -123,6 +154,29 @@ public class HTMLLabel extends TextFlow {
 		for (Text text : texts) {
 			text.setFill(color);
 		}
+	}
+
+	public void setImage(File imageFile) {
+		imageView.setImage(null);
+		imageView.fitHeightProperty().unbind();
+
+		if (imageFile != null) {
+			try {
+				File relFile = Paths.relative(Paths.resourcesDir, imageFile);
+				Image image = new Image(new BufferedInputStream(new FileInputStream(relFile)));
+				imageView.setImage(image);
+				imageView.setPreserveRatio(true);
+				imageView.fitHeightProperty().bind(maxHeight.subtract(maxHeight.divide(5)));
+			} catch (Throwable e) {
+				System.out.println("Couldn't load imageView " + imageFile.getName() + ": " + e.getMessage());
+			}
+		}
+	}
+
+
+	public void setMaxHeight(DoubleProperty maxHeight) {
+		this.maxHeight = maxHeight;
+		setText(curContent);
 	}
 
 }

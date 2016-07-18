@@ -14,6 +14,7 @@ public class Settings implements JSOEncodable, Cloneable{
 	private int rounds;
 	private int questionsPerRound;
 	private boolean consumeQuestions;
+
 	public Settings(){
 		setLocation("");
 		setStrictTimeout(true);
@@ -100,6 +101,4 @@ public class Settings implements JSOEncodable, Cloneable{
 	public void setConsumeQuestions(boolean consumeQuestions) {
 		this.consumeQuestions = consumeQuestions;
 	}
-
-
 }

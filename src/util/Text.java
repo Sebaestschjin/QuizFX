@@ -27,6 +27,8 @@ public class Text {
 
 	public static final String ROUNDS = "Runden";
 
+	public static final String DEMO = "Demo-Modus";
+
 	public static final String QUESTIONS_PER_ROUND = "Fragen pro Runde";
 
 	public static final String TIME = "Zeit pro Frage (in s)";

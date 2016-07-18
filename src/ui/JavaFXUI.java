@@ -3,18 +3,24 @@ package ui;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import main.PersistentState;
 import model.*;
 import ui.screen.*;
+
+import java.util.List;
 
 /**
  * @author Sebastian Stern
  */
 public class JavaFXUI extends StackPane implements QuizUI {
+
+	public static boolean DEMO_MODE = false;
 
 	private final Duration FADE_OUT = new Duration(500);
 
@@ -33,7 +39,7 @@ public class JavaFXUI extends StackPane implements QuizUI {
 		loadScreen(new BackgroundScreen());
 	}
 
-    private void loadScreen(UIScreen screen) {
+    public void loadScreen(UIScreen screen) {
 		// set the correct callbacks
 		screen.setController(controller);
 		screen.setScene(getScene());
@@ -113,7 +119,12 @@ public class JavaFXUI extends StackPane implements QuizUI {
 
 	@Override
 	public void showRoundOverview(GameState gs, int totalRounds, int questionsPerRoundPerTeam) {
-		loadScreen(new RoundOverviewScreen(gs, totalRounds, questionsPerRoundPerTeam));
+
+		if (DEMO_MODE) {
+			loadScreen(new DemoScreen(this, gs));
+		} else {
+			loadScreen(new RoundOverviewScreen(gs, totalRounds, questionsPerRoundPerTeam));
+		}
 	}
 
 	@Override
@@ -124,7 +135,7 @@ public class JavaFXUI extends StackPane implements QuizUI {
 
 	@Override
 	public void showSolution(GameState gs, Question q, Answer[] permutedAnswers, int team1AnswerIndex, int team2AnswerIndex) {
-		currentQuestion.showAnswer(team1AnswerIndex, team2AnswerIndex);
+		Platform.runLater(() ->	currentQuestion.showAnswer(team1AnswerIndex, team2AnswerIndex));
 	}
 
 	@Override
