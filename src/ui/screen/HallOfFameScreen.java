@@ -2,13 +2,12 @@ package ui.screen;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Material;
 import model.HallOfFame;
 import model.Team;
 import ui.Sizer;
@@ -34,7 +33,7 @@ public class HallOfFameScreen extends UIScreen {
 	}
 
 	@Override
-	public Node createUI() {
+	public Pane createUI() {
 		BorderPane pane = new BorderPane();
 		pane.setPadding(new Insets(30));
 

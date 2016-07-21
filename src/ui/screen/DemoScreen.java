@@ -1,9 +1,9 @@
 package ui.screen;
 
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import model.Answer;
 import model.Category;
@@ -33,7 +33,7 @@ public class DemoScreen extends UIScreen {
 	}
 
 	@Override
-	protected Node createUI() {
+	protected Pane createUI() {
 		TilePane content = new TilePane();
 		content.setHgap(20);
 		content.setVgap(20);

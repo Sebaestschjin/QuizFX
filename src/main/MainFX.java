@@ -5,11 +5,10 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import json.JSOCodec;
 import json.JSOWithPosition;
 import json.parser.JSONParser;
-import model.*;
+import model.Category;
 import ui.JavaFXUI;
 import util.Resource;
 import util.Text;
@@ -22,17 +21,11 @@ import java.util.List;
  *
  */
 public class MainFX extends Application {
-
-    /** The shown stage. */
-    public static Stage primaryStage;
-
     /** The handler that loads the screens. */
     private JavaFXUI screenLoader;
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		primaryStage = stage;
-
 		// default settings
 		stage.setTitle(Text.APPNAME);
 		stage.setMinWidth(600);
@@ -41,7 +34,7 @@ public class MainFX extends Application {
 		// MainFX scene window
 		screenLoader = new JavaFXUI();
 		final Scene scene = new Scene(screenLoader, 600, 500);
-		scene.getStylesheets().add(getClass().getResource(Resource.STYLE).toExternalForm());
+		scene.getStylesheets().add(Paths.asRelativeTo(Paths.resourcesDir, new File(Resource.STYLE)).toURI().toString());
 		stage.setScene(scene);
 		screenLoader.initialize();
 

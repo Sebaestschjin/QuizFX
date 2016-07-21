@@ -5,10 +5,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import ui.ControllerCallback;
 import ui.Sizer;
@@ -27,7 +24,7 @@ public abstract class UIScreen {
 
 	protected ControllerCallback controller;
 
-	protected Node ui;
+	protected Pane ui;
 
 	public void setController(ControllerCallback controller) {
 		this.controller = controller;
@@ -37,7 +34,7 @@ public abstract class UIScreen {
 		this.scene = scene;
 	}
 
-	public Node getUI() {
+	public Pane getUI() {
 		if (ui == null) {
 			sizer = new Sizer(this);
 			ui = createUI();
@@ -50,7 +47,7 @@ public abstract class UIScreen {
 
 	}
 
-	protected abstract Node createUI();
+	protected abstract Pane createUI();
 
 	public DoubleProperty getScreenRatioProperty(double ratio) {
 		DoubleProperty prop = new SimpleDoubleProperty();

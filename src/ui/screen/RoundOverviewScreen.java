@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -43,7 +42,7 @@ public class RoundOverviewScreen extends UIScreen {
 	}
 
 	@Override
-	protected Node createUI() {
+	protected Pane createUI() {
 		maxWidth.bind(scene.widthProperty().subtract(scene.widthProperty().divide(Sizer.BG_RATIO - 1)));
 
 		BorderPane p = new BorderPane();
@@ -117,12 +116,13 @@ public class RoundOverviewScreen extends UIScreen {
 		boolean team1 = team == 0;
 
 		Label teamName = new Label(gameState.getTeam(team1).getName());
+		teamName.setTextFill(Color.WHITE);
 		sizer.font(teamName);
 
 		StackPane pane = new StackPane();
 		pane.setPadding(new Insets(10));
 		GridPane.setConstraints(pane, team1 ? 0 : questionsPerRound + 2, 0);
-		pane.setAlignment(team1 ? Pos.CENTER_LEFT : Pos.CENTER_RIGHT);
+		pane.setAlignment(Pos.CENTER);
 		GridPane.setColumnSpan(pane, questionsPerRound - 1);
 		setBackground(pane, Colors.team(team == 0), new CornerRadii(10));
 		pane.getChildren().addAll(teamName);

@@ -69,7 +69,7 @@ public class QuestionScreen extends UIScreen {
 	}
 
 	@Override
-	protected Node createUI() {
+	protected Pane createUI() {
 		maxWidth.bind(scene.widthProperty().subtract(scene.widthProperty().divide(Sizer.BG_RATIO - 1)));
 		questionHeight.bind(scene.heightProperty().multiply(0.4));
 		answerHeight.bind(scene.heightProperty().multiply(0.28));
@@ -145,11 +145,12 @@ public class QuestionScreen extends UIScreen {
 		VBox content = new VBox();
 		content.setAlignment(Pos.CENTER);
 
-		questionLabel = new HTMLLabel(question.getQuestionText());
+		String questionText = question.getQuestionText();
+		questionLabel = new HTMLLabel(questionText);
 		questionLabel.setTextAlignment(TextAlignment.CENTER);
 		questionLabel.setMaxHeight(questionHeight);
 		questionLabel.setImage(question.getQuestionImageFile());
-		sizer.font(questionLabel, Sizer.FONT_RATIO_GENERAL * 1.5);
+		setRatio(questionLabel, 270, 1.5);
 
 		content.getChildren().add(questionLabel);
 		content.getStyleClass().add("question");
@@ -174,7 +175,7 @@ public class QuestionScreen extends UIScreen {
 		answerLabel.setTextFill(Color.WHITE);
 		answerLabel.setTextAlignment(TextAlignment.CENTER);
 		answerLabel.setMaxHeight(answerHeight);
-		sizer.font(answerLabel);
+		setRatio(answerLabel, 170);
 
 		setBackground(content, Colors.PETROL);
 
@@ -243,6 +244,7 @@ public class QuestionScreen extends UIScreen {
 		questionLabel.setImage(question.getAnswerImageFile());
 		EventHandler<MouseEvent> handler = event -> showSolution();
 		questionLabel.getParent().setOnMouseClicked(handler);
+		setRatio(questionLabel, 270, 1.5);
 
 		// show correct answer
 		for (int i = 0; i < answers.length; ++i) {
@@ -310,5 +312,19 @@ public class QuestionScreen extends UIScreen {
 		final KeyFrame kf = new KeyFrame(Duration.millis(500), xValue, yValue);
 		timeline.getKeyFrames().add(kf);
 		timeline.play();
+	}
+
+	private void setRatio(HTMLLabel l, int maxWord) {
+		setRatio(l, maxWord, 1);
+	}
+
+	private void setRatio(HTMLLabel l, int maxWord, double scale) {
+		if (l.getImageWidth() > 0)
+			maxWord -= 100;
+
+		double reduceRatio = 0.18;
+		double fontRatio = (Sizer.FONT_RATIO_GENERAL * scale)
+				* (1 - reduceRatio * (l.getContent().length() / maxWord));
+		sizer.font(l, fontRatio);
 	}
 }

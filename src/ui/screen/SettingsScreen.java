@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import model.Settings;
 import ui.JavaFXUI;
 import util.Text;
@@ -22,7 +23,7 @@ public class SettingsScreen extends UIScreen {
 	}
 
 	@Override
-	protected Node createUI() {
+	protected Pane createUI() {
 		GridPane pane = new GridPane();
 		pane.setAlignment(Pos.CENTER);
 		pane.setHgap(10);

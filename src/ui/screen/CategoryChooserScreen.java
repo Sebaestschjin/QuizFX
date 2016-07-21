@@ -1,10 +1,17 @@
 package ui.screen;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -14,11 +21,18 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 import javafx.util.Pair;
+import main.Paths;
 import model.Category;
 import model.GameState;
 import util.Colors;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +49,8 @@ public class CategoryChooserScreen extends UIScreen {
 	private int choosingTeam;
 	private GameState gs;
 
+	private Group graphics;
+
 	public CategoryChooserScreen(boolean team1Chooses, GameState gs, Category... categories) {
 		this.categories = categories;
 		this.choosingTeam = team1Chooses ? 0 : 1;
@@ -42,7 +58,7 @@ public class CategoryChooserScreen extends UIScreen {
 	}
 
 	@Override
-	protected Node createUI() {
+	protected Pane createUI() {
 		VBox pane = new VBox();
 		pane.setAlignment(Pos.CENTER);
 
@@ -50,9 +66,9 @@ public class CategoryChooserScreen extends UIScreen {
 		w = unit * 8;
 		h = unit * 2;
 
-		Group group = new Group();
-		group.getChildren().addAll(createBorders());
-		group.getChildren().addAll(createCategories());
+		graphics = new Group();
+		graphics.getChildren().addAll(createBorders());
+		graphics.getChildren().addAll(createCategories());
 
 		String text = gs.getTeam(choosingTeam == 0).getName();
 		Text choosing = new Text(text);
@@ -61,9 +77,9 @@ public class CategoryChooserScreen extends UIScreen {
 		choosing.setWrappingWidth(w);
 		sizer.font(choosing);
 
-		group.getChildren().add(choosing);
+		graphics.getChildren().add(choosing);
 
-		pane.getChildren().add(group);
+		pane.getChildren().add(graphics);
 		return pane;
 	}
 
@@ -119,7 +135,7 @@ public class CategoryChooserScreen extends UIScreen {
 			final int cat = i;
 			Pair<Shape, Rectangle> created = createShape(true, cat);
 
-			EventHandler<MouseEvent> clickHandler = event -> controller.categorySelected(cat);
+			EventHandler<MouseEvent> clickHandler = event -> chooseCategory(cat);
 
 			Shape shape = created.getKey();
 			shape.setOnMouseClicked(clickHandler);
@@ -159,5 +175,37 @@ public class CategoryChooserScreen extends UIScreen {
 		shapes.add(center);
 
 		return shapes;
+	}
+
+	private void chooseCategory(int category) {
+		Node from = graphics;
+		ImageView to;
+
+		try {
+			File imFile = Paths.asRelativeTo(Paths.resourcesDir, categories[category].getImageFile());
+			to = new ImageView(new Image(new BufferedInputStream(new FileInputStream(imFile))));
+			to.setPreserveRatio(true);
+			to.fitHeightProperty().bind(scene.heightProperty().subtract(scene.heightProperty().divide(10)));
+		} catch (IOException e) {
+			controller.categorySelected(category);
+			e.printStackTrace();
+			return;
+		}
+
+		to.setOpacity(0.0);
+		to.setOnMouseClicked(event -> controller.categorySelected(category));
+		Timeline fade = new Timeline(new KeyFrame(Duration.ZERO,
+				new KeyValue(from.opacityProperty(), 1.0)),
+				new KeyFrame(new Duration(500),
+						t -> {
+							// remove current screen and add new one
+							getUI().getChildren().remove(from);
+							getUI().getChildren().add(to);
+							Timeline fadeIn = new Timeline(
+									new KeyFrame(Duration.ZERO, new KeyValue(to.opacityProperty(), 0.0)),
+									new KeyFrame(new Duration(500), new KeyValue(to.opacityProperty(), 1.0)));
+							fadeIn.play();
+						}, new KeyValue(from.opacityProperty(), 0.0)));
+		fade.play();
 	}
 }

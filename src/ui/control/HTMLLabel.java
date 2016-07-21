@@ -1,11 +1,17 @@
 package ui.control;
 
+import com.intellij.execution.ui.layout.Grid;
 import javafx.beans.property.DoubleProperty;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -50,7 +56,7 @@ public class HTMLLabel extends HBox {
 		}
 	}
 
-	private List<Pair<String, List<Style>>> splittedText = new ArrayList<>();
+	private List<Pair<String, List<Style>>> splitText = new ArrayList<>();
 
 	private List<Text> texts = new ArrayList<>();
 
@@ -69,7 +75,7 @@ public class HTMLLabel extends HBox {
 		curContent = content;
 		textFlow.getChildren().clear();
 		texts.clear();
-		splittedText.clear();
+		splitText.clear();
 
 		// replace HTML and br tags
 		content = content.replaceAll("</?[Hh][Tt][Mm][Ll]>", "");
@@ -78,13 +84,10 @@ public class HTMLLabel extends HBox {
 		// replace style tags
 		splitText(content);
 		addTexts();
-
-		System.out.println(textFlow.getLayoutBounds().getHeight());
-		System.out.println(maxHeight == null ? "null" : maxHeight.getValue());
 	}
 
 	private void splitText(String content) {
-		splittedText.add(new Pair<>(content, Collections.singletonList(Style.REGULAR)));
+		splitText.add(new Pair<>(content, Collections.singletonList(Style.REGULAR)));
 		for (Style s : Style.values()) {
 			if (s == Style.REGULAR) {
 				continue;
@@ -96,7 +99,7 @@ public class HTMLLabel extends HBox {
 	private void doSplit(Style style) {
 		List<Pair<String, List<Style>>> newSplits = new ArrayList<>();
 
-		for (Pair<String, List<Style>> split : splittedText) {
+		for (Pair<String, List<Style>> split : splitText) {
 			String tag = style.tag + style.tag.toUpperCase();
 			String text = split.getKey();
 			List<Style> curStyles = split.getValue();
@@ -116,11 +119,11 @@ public class HTMLLabel extends HBox {
 			newSplits.add(new Pair<>(text.substring(last), curStyles));
 		}
 
-		splittedText = newSplits;
+		splitText = newSplits;
 	}
 
 	private void addTexts() {
-		for (Pair<String, List<Style>> text : splittedText) {
+		for (Pair<String, List<Style>> text : splitText) {
 			Text t = new Text(text.getKey());
 			addText(t);
 
@@ -168,7 +171,7 @@ public class HTMLLabel extends HBox {
 				imageView.setPreserveRatio(true);
 				imageView.fitHeightProperty().bind(maxHeight.subtract(maxHeight.divide(5)));
 			} catch (Throwable e) {
-				System.out.println("Couldn't load imageView " + imageFile.getName() + ": " + e.getMessage());
+				System.err.println("Couldn't load image " + imageFile.getName() + ": " + e.getMessage());
 			}
 		}
 	}
@@ -178,5 +181,18 @@ public class HTMLLabel extends HBox {
 		this.maxHeight = maxHeight;
 		setText(curContent);
 	}
+
+	public String getContent() {
+		return curContent;
+	}
+
+	public double getImageWidth() {
+		if (imageView.getImage() != null && !imageView.getImage().isError()) {
+			return imageView.getImage().getWidth();
+		}
+
+		return 0.0;
+	}
+
 
 }

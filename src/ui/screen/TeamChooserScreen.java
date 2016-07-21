@@ -1,7 +1,6 @@
 package ui.screen;
 
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -23,7 +22,7 @@ public class TeamChooserScreen extends UIScreen {
     }
 
     @Override
-    public Node createUI() {
+    public Pane createUI() {
         VBox pane = new VBox();
         pane.setAlignment(Pos.CENTER);
 		pane.setSpacing(30);
