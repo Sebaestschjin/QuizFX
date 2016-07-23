@@ -119,7 +119,7 @@ public class Question implements Weighted, JSOEncodable{
 		ret.put("fragebild", c.encode(questionImageFile==null?null:questionImageFile.getPath()));
 		ret.put("antworttext", c.encode(answerText));
 		ret.put("antwortbild", c.encode(answerImageFile==null?null:answerImageFile.getPath()));
-		ret.put("antwortquulle", c.encode(answerSource));
+		ret.put("antwortquelle", c.encode(answerSource));
 		ret.put("gewicht", c.encode(weight));
 		ret.put("antworten", c.encode(answers));
 		return new JSOWithPosition(ret);

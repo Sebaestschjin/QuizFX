@@ -37,7 +37,6 @@ public class QuestionScreen extends UIScreen {
 
 	// TODO allow key-bindings to be set by user
 	private List<KeyCode> team1Keys = Arrays.asList(KeyCode.Q, KeyCode.E, KeyCode.Y, KeyCode.C);
-	//private List<KeyCode> team2Keys = Arrays.asList(KeyCode.NUMPAD7, KeyCode.NUMPAD9, KeyCode.NUMPAD1, KeyCode.NUMPAD3);
 	private List<KeyCode> team2Keys = Arrays.asList(KeyCode.U, KeyCode.O, KeyCode.M, KeyCode.PERIOD);
 
 	private GameState gs;
@@ -57,6 +56,8 @@ public class QuestionScreen extends UIScreen {
 	private DoubleProperty answerHeight = new SimpleDoubleProperty();
 
 	private HTMLLabel questionLabel;
+
+	private Label sourceText;
 
 	private List<Region> answerNodes = new ArrayList<>();
 
@@ -80,6 +81,12 @@ public class QuestionScreen extends UIScreen {
 		// add the question
 		Node questionNode = createQuestion(question);
 		grid.add(questionNode, 0, 0);
+
+		sourceText = new Label();
+		sourceText.setWrapText(true);
+		grid.add(sourceText, 2, 0);
+		GridPane.setValignment(sourceText, VPos.BOTTOM);
+		sizer.font(sourceText, Sizer.FONT_RATIO_GENERAL * 0.4);
 
 		// add all answers
 		for (int i = 0; i < answers.length; ++i) {
@@ -245,6 +252,10 @@ public class QuestionScreen extends UIScreen {
 		EventHandler<MouseEvent> handler = event -> showSolution();
 		questionLabel.getParent().setOnMouseClicked(handler);
 		setRatio(questionLabel, 270, 1.5);
+
+		if (question.getAnswerSource() != null) {
+			sourceText.setText(question.getAnswerSource());
+		}
 
 		// show correct answer
 		for (int i = 0; i < answers.length; ++i) {

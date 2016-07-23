@@ -5,13 +5,13 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
 import model.GameState;
 import ui.Sizer;
 import util.Colors;
@@ -148,10 +148,12 @@ public class RoundOverviewScreen extends UIScreen {
 	private void createCategory(int round, Pane parent) {
 		if (gameState.getRounds().size() > round) {
 			String title = gameState.getRounds().get(round).getCategory().getTitle();
-			TextFlow category = new TextFlow();
+			Label category = new Label(title);
+			category.setWrapText(true);
 			category.setTextAlignment(TextAlignment.CENTER);
-			category.getChildren().add(new javafx.scene.text.Text(title));
 			sizer.font(category, Sizer.FONT_RATIO_GENERAL * 0.7);
+			GridPane.setValignment(category, VPos.CENTER);
+			GridPane.setHalignment(category, HPos.CENTER);
 			GridPane.setConstraints(category, questionsPerRound, round + 1);
 			parent.getChildren().add(category);
 		}
