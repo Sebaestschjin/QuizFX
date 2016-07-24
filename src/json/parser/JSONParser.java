@@ -202,6 +202,7 @@ public class JSONParser {
 					throw new ParserException("Carriage return in string literal", pos);
 				//TODO other control characters
 				if(c=='\\'){
+					ic=input.read();
 					if(ic==-1){
 						throw new ParserException("End of input in string literal", oldPos);
 					}
@@ -209,11 +210,11 @@ public class JSONParser {
 					pos.advance(c);
 					switch(c){
 					case '\\': sb.append('\\'); break;
-					case '\t': sb.append('\t'); break;
-					case '\r': sb.append('\r'); break;
-					case '\n': sb.append('\n'); break;
-					case '\b': sb.append('\b'); break;
-					case '\f': sb.append('\f'); break;
+					case 't': sb.append('\t'); break;
+					case 'r': sb.append('\r'); break;
+					case 'n': sb.append('\n'); break;
+					case 'b': sb.append('\b'); break;
+					case 'f': sb.append('\f'); break;
 					case '/': sb.append('/'); break;
 					case '"': sb.append('"'); break;
 					case 'u':{
