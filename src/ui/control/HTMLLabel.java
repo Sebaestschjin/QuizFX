@@ -1,6 +1,5 @@
 package ui.control;
 
-import com.intellij.execution.ui.layout.Grid;
 import javafx.beans.property.DoubleProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
